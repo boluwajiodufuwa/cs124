@@ -14,7 +14,7 @@ Note that Matrices are represented in the following form "int matrix[width*heigh
 where each value in the matrix is an int. See this link for more info:
 https://stackoverflow.com/questions/256297/best-way-to-represent-a-2-d-array-in-c-with-size-determined-at-run-time
 
-For example, the array {0,1,2,3} appears like the following:
+For example, the array with dimension 2 {0,1,2,3} appears like the following:
 0 2
 1 3
 */
