@@ -137,6 +137,58 @@ void asciiToProduct(string fn, int dim, int *result) {
 
 }
 
+void strassenMultiply(int* ma, int* mb, int dim, int* result) {
+    // STEP 1: Splits the two n by n matrices into 4 quarter submatrices (currently functional for n=2^k)
+    // Calculate the size of each submatrix (same dim for both matrices)
+    int half_dim = dim / 2;
+    int quarter_dim = dim / 4;
+
+    // Initialize quarter matrices
+    int* qa1 = new int[quarter_dim * quarter_dim];
+    int* qa2 = new int[quarter_dim * quarter_dim];
+    int* qa3 = new int[quarter_dim * quarter_dim];
+    int* qa4 = new int[quarter_dim * quarter_dim];
+    int* qb1 = new int[quarter_dim * quarter_dim];
+    int* qb2 = new int[quarter_dim * quarter_dim];
+    int* qb3 = new int[quarter_dim * quarter_dim];
+    int* qb4 = new int[quarter_dim * quarter_dim];
+    
+    // Copy the elements of the input matrix to each submatrix
+    for (int i = 0; i < half_dim; i++) {
+        for (int j = 0; j < half_dim; j++) {
+            // Copy elements to the first submatrix (top left)
+            qa1[i * quarter_dim + j] = ma[i * n + j];
+            
+            // Copy elements to the second submatrix (top right)
+            qa2[i * quarter_dim + j] = ma[i * n + half_dim + j];
+            
+            // Copy elements to the third submatrix (bottom left)
+            qa3[i * quarter_dim + j] = ma[(half_dim + i) * n + j];
+            
+            // Copy elements to the fourth submatrix (bottom right)
+            qa4[i * quarter_dim + j] = ma[(half_dim + i) * n + half_dim + j];
+        }
+    }
+
+
+    // Copy the elements of the input matrix to each submatrix
+    for (int i = 0; i < half_dim; i++) {
+        for (int j = 0; j < half_dim; j++) {
+            // Copy elements to the first submatrix (top left)
+            qb1[i * quarter_dim + j] = mb[i * n + j];
+            
+            // Copy elements to the second submatrix (top right)
+            qb2[i * quarter_dim + j] = mb[i * n + half_dim + j];
+            
+            // Copy elements to the third submatrix (bottom left)
+            qb3[i * quarter_dim + j] = mb[(half_dim + i) * n + j];
+            
+            // Copy elements to the fourth submatrix (bottom right)
+            qb4[i * quarter_dim + j] = mb[(half_dim + i) * n + half_dim + j];
+        }
+    }
+}
+
 // ----------------------------------------------------------------
 // Main
 // ----------------------------------------------------------------
