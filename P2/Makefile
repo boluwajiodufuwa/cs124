@@ -12,11 +12,11 @@ CFLAGS = -O2 -Wall -Wextra
 strassen: strassen.cpp
 	$(CC) $(CFLAGS) strassen.cpp -o strassen -lm -lpthread
 
-objects: strassen.cpp tests.cpp
-	$(CC) $(CFLAGS) -c strassen.cpp tests.cpp
+objects: strassen.cpp tests.cpp experiment.cpp
+	$(CC) $(CFLAGS) -c strassen.cpp tests.cpp experiment.cpp
 
-link: strassen.o tests.o
-	$(CC) $(CFLAGS) -o strassen strassen.o tests.o
+link: strassen.o tests.o experiment.o
+	$(CC) $(CFLAGS) -o strassen strassen.o tests.o experiment.o
 
 tests:
 	make objects

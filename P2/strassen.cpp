@@ -48,8 +48,21 @@ bool compareMatrices(int *ma, int *mb, int dimension) {
     return true;
 }
 
-void getRandomMatrix(int dimension, int *result) {
+// Generates a random matrix of given dimension into result matrix. start and end range are range
+// of values that will be in matrix
+void getRandomMatrix(int dimension, int *result, int start_range, int end_range) {
+    // unfirom random generatord
+    random_device rand_dev;
+    default_random_engine gen(rand_dev());
+    uniform_int_distribution<int> rand_int(start_range, end_range);
 
+    for (int r = 0; r < dimension; r++) {
+        for (int c = 0; c < dimension; c++) {
+            // Adding random int value to matrix
+            int val = rand_int(gen);
+            setMatrixValue(result, r, c, dimension, val);
+        }
+    }
 }
 
 void printMatrix(int *matrix, int dim) {
@@ -137,11 +150,16 @@ int main(int argc, char *argv[]) {
         run_tests();
     }
 
-    if (inputfile[0] != '\0') {
-        printMatrix(asciiToMatrices(inputfile, dimension).first, dimension);
-        cout << "\n\n";
-        printMatrix(asciiToMatrices(inputfile, dimension).second, dimension);
-    }
+    // if (inputfile[0] != '\0') {
+    //     printMatrix(asciiToMatrices(inputfile, dimension).first, dimension);
+    //     cout << "\n\n";
+    //     printMatrix(asciiToMatrices(inputfile, dimension).second, dimension);
+    // }
+
+    int *result = new int[dimension * dimension];
+    getRandomMatrix(dimension, result, 0, 2);
+    printMatrix(result, dimension);
+    delete[] result;
 
     return 0;
 }
