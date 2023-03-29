@@ -158,14 +158,48 @@ int* matrixAdd(int dim, int* ma, int* mb, int* result, bool add = true) {
     return result;
 }
 
+// Helper function used to add an additional rightmost column and additional bottom row to odd-sized matrices
+int* padMatrix(int* matrix, int* padded, int dim) {
+    // Copy values from original matrix to padded matrix
+    for (int i = 0; i < dim+1; i++) {
+        for (int j = 0; j < dim+1; j++) {
+            if (i == dim || j == dim) {
+                padded[i*(dim+1) + j] = 0;
+            }
+            else {
+                padded[i*(dim+1) + j] = matrix[i*dim + j];
+            }
+        }
+    }
+    return padded;
+}
 
 void strassen(int dim, int* ma, int* mb, int* result) {
     // Base Case
+    int crossover = 1;
     if (dim == 1) {
         *result = *ma * *mb;
         return;
     }
+    else if (dim == crossover) {
+        int* new_result = new int[(dim) * (dim)];
+        conventional(dim, ma, mb, new_result);
+        return;
+    }
+    else if (dim % 2 != 0) {
+        // Initialize space for new padded matrices
+        int* pad_ma = new int[(dim+1) * (dim+1)];
+        int* pad_mb = new int[(dim+1) * (dim+1)];
+        int* pad_result = new int[(dim+1) * (dim+1)];
+        int* new_result = new int[(dim+1) * (dim+1)];
 
+        // Pad matrices using padding function
+        pad_ma = padMatrix(ma, pad_result, dim);
+        pad_mb = padMatrix(mb, pad_result, dim);
+        
+        // Call strassen on the newly padded matrices
+        strassen(dim+1, pad_ma, pad_mb, new_result);
+    }
     // STEP 1: Splits the two n by n matrices into 4 quarter submatrices (currently functional for n=2^k)
     // Calculate the size of each submatrix (same dim for both matrices)
     // Initialize quarter matrices
