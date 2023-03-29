@@ -262,7 +262,6 @@ void strassen(int dim, int* ma, int* mb, int* result) {
             result[(half_dim + i) * dim + half_dim + j] = result4[i * half_dim + j];
         }
     }
-    printMatrix(result, dim);
 }
 
 // ----------------------------------------------------------------
