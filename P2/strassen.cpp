@@ -138,7 +138,7 @@ void asciiToProduct(string fn, int dim, int *result) {
 }
 
 // Helper function to add two square matrices
-void matrixAdd(int dim, int* ma, int* mb, int* result, bool add = true) {
+int* matrixAdd(int dim, int* ma, int* mb, int* result, bool add = true) {
     if (add == true) {
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
@@ -243,10 +243,10 @@ void strassen(int dim, int* ma, int* mb, int* result) {
     strassen(half_dim, matrixAdd(quarter_dim, qa1, qa3, tmp3, false), matrixAdd(quarter_dim, qb1, qb2, tmp3), p7);
     
     // Calculate the values of the submatrices that make up the result
-    matrixAdd(half_dim, matrixAdd(quarter_dim, p5, p4, tmp1), matrixAdd(quarter_dim, p2, p6, tmp2), result1, false)
-    matrixAdd(half_dim, p1, p2, result2)
-    matrixAdd(half_dim, p3, p4, result3)
-    matrixAdd(half_dim, matrixAdd(quarter_dim, p1, p5, tmp3), matrixAdd(quarter_dim, p3, p7, tmp4, false), result4, false)
+    matrixAdd(half_dim, matrixAdd(quarter_dim, p5, p4, tmp1), matrixAdd(quarter_dim, p2, p6, tmp2), result1, false);
+    matrixAdd(half_dim, p1, p2, result2);
+    matrixAdd(half_dim, p3, p4, result3);
+    matrixAdd(half_dim, matrixAdd(quarter_dim, p1, p5, tmp3), matrixAdd(quarter_dim, p3, p7, tmp4, false), result4, false);
     
     // Copy the submatrices back into the output matrix
     for (int i = 0; i < half_dim; i++) {
