@@ -18,7 +18,7 @@ void printTrial(string type, int dim, double time, string unit) {
         << endl;
 }
 
-pair<double, double> experimentTrial(int dim, int trials) {
+pair<double, double> crossOverExperimentTrial(int dim, int trials) {
     double time_c = 0.0;
     double time_s = 0.0;
     for (int i = 0; i < trials; ++i) {
@@ -27,8 +27,8 @@ pair<double, double> experimentTrial(int dim, int trials) {
         int *result = new int[dim*dim];
 
         // Getting random matrices
-        getRandomMatrix(dim, ma, -1, 2);
-        getRandomMatrix(dim, mb, -1, 2);
+        getRandomMatrix(dim, ma, -1, 2, 1);
+        getRandomMatrix(dim, mb, -1, 2, 1);
 
         // Timing conventional multiplication
         auto start = high_resolution_clock::now();
@@ -57,10 +57,10 @@ pair<double, double> experimentTrial(int dim, int trials) {
     return make_pair(time_c, time_s);
 }
 
-void runExperiment() {
+void runCrossOverExperiment() {
     // Open csv file
     ofstream myfile;
-    myfile.open("experiment.csv");
+    myfile.open("crossover_experiment.csv");
 
     // Experimenting with granular values of n
     for (int dim = 0; dim < 100; dim++){
@@ -78,6 +78,42 @@ void runExperiment() {
         printTrial("Conventional", dim, times.first, "seconds");
         myfile << "Strassen" << "," << dim << "," << times.second << "\n";
         printTrial("Strassen", dim, times.first, "seconds");   
+    }
+
+    myfile.close();
+}
+
+// Counts the number of triangular paths in a graph A^3
+int countTriangles(int dim, int *matrix) {
+    int count = 0;
+    for (int i = 0; i < dim, i++) {
+        count += getMatrixValue(matrix, i, i, dim);
+    }
+
+    return (count / 6);
+}
+
+void runTriangleExperiment() {
+    // Open csv file
+    ofstream myfile;
+    myfile.open("triangle_experiment.csv");
+
+    // Running triangle experiment for different values of probability
+    for (int prob = 1; prob < 6, prob++) {
+        int *matrix = new int[1024*1024];
+        int *result = new int[1024*1024];
+        getRandomMatrix(1024, matrix, 0, 1, prob);
+
+        // strassen(dim, matrix, matrix, result); //A^2
+        // strassen(dim, result, matrix, result); //A^3
+
+        int triangle_count = countTriangles(1024, result);
+
+        // output to file "probability, number of triangles"
+        myfile << i << "," << triangle_count <<"\n";
+        
+        delete[] matrix;
+        delete[] result;
     }
 
     myfile.close();

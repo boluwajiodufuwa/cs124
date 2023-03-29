@@ -50,17 +50,25 @@ bool compareMatrices(int *ma, int *mb, int dimension) {
 
 // Generates a random matrix of given dimension into result matrix. start and end range are range
 // of values that will be in matrix
-void getRandomMatrix(int dimension, int *result, int start_range, int end_range) {
-    // unfirom random generatord
+// int prob should always be 1 unless this func is being used for triangle experiment
+void getRandomMatrix(int dimension, int *result, int start_range, int end_range, int prob) {
+    // unfirom random generators
     random_device rand_dev;
     default_random_engine gen(rand_dev());
     uniform_int_distribution<int> rand_int(start_range, end_range);
+    uniform_real_distribution<double> rand_pct(0.0, 100.0);
 
     for (int r = 0; r < dimension; r++) {
         for (int c = 0; c < dimension; c++) {
-            // Adding random int value to matrix
-            int val = rand_int(gen);
-            setMatrixValue(result, r, c, dimension, val);
+            if (prob == 1) {
+                // Adding random int value to matrix
+                int val = rand_int(gen);
+                setMatrixValue(result, r, c, dimension, val);
+            } else {
+                // Adding edges between nodes with a specific probability (used for triangle experiment)
+                int val = rand_pct(gen) <= prob ? 1 : 0;
+                setMatrixValue(result, r, c, dimension, val);
+            }
         }
     }
 }
@@ -318,7 +326,7 @@ int main(int argc, char *argv[]) {
     // }
 
     int *result = new int[dimension * dimension];
-    getRandomMatrix(dimension, result, 0, 2);
+    getRandomMatrix(dimension, result, 0, 2, 1);
     printMatrix(result, dimension);
     delete[] result;
 
