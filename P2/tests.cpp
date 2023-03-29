@@ -72,7 +72,6 @@ bool test_strassen() {
     instantiateMatrix(ma, (int[]) {0,6,2,200}, dim);
     instantiateMatrix(mb, (int[]) {4,9,6,-8}, dim);
     instantiateMatrix(test_solution, (int[]) {18,1824,-16,-1564}, dim);
-
     strassen(dim, ma, mb, result);
 
     if (!compareMatrices(result, test_solution, dim)) {
