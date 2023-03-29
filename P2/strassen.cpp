@@ -168,94 +168,101 @@ void strassen(int dim, int* ma, int* mb, int* result) {
 
     // STEP 1: Splits the two n by n matrices into 4 quarter submatrices (currently functional for n=2^k)
     // Calculate the size of each submatrix (same dim for both matrices)
-    int half_dim = dim / 2;
-    int quarter_dim = dim / 4;
-
     // Initialize quarter matrices
-    int* qa1 = new int[quarter_dim * quarter_dim];
-    int* qa2 = new int[quarter_dim * quarter_dim];
-    int* qa3 = new int[quarter_dim * quarter_dim];
-    int* qa4 = new int[quarter_dim * quarter_dim];
-    int* qb1 = new int[quarter_dim * quarter_dim];
-    int* qb2 = new int[quarter_dim * quarter_dim];
-    int* qb3 = new int[quarter_dim * quarter_dim];
-    int* qb4 = new int[quarter_dim * quarter_dim];
+    int half_dim = dim / 2;
+    int* qa1 = new int[half_dim * half_dim];
+    int* qa2 = new int[half_dim * half_dim];
+    int* qa3 = new int[half_dim * half_dim];
+    int* qa4 = new int[half_dim * half_dim];
+    int* qb1 = new int[half_dim * half_dim];
+    int* qb2 = new int[half_dim * half_dim];
+    int* qb3 = new int[half_dim * half_dim];
+    int* qb4 = new int[half_dim * half_dim];
     
     // Copy the elements of the input matrices to each submatrix
     for (int i = 0; i < half_dim; i++) {
         for (int j = 0; j < half_dim; j++) {
             // MATRIX MA
             // Copy elements to the first submatrix (top left)
-            qa1[i * quarter_dim + j] = ma[i * dim + j];
+            qa1[i * half_dim + j] = ma[i * dim + j];
             
             // Copy elements to the second submatrix (top right)
-            qa2[i * quarter_dim + j] = ma[i * dim + half_dim + j];
+            qa3[i * half_dim + j] = ma[i * dim + half_dim + j];
             
             // Copy elements to the third submatrix (bottom left)
-            qa3[i * quarter_dim + j] = ma[(half_dim + i) * dim + j];
+            qa2[i * half_dim + j] = ma[(half_dim + i) * dim + j];
             
             // Copy elements to the fourth submatrix (bottom right)
-            qa4[i * quarter_dim + j] = ma[(half_dim + i) * dim + half_dim + j];
+            qa4[i * half_dim + j] = ma[(half_dim + i) * dim + half_dim + j];
 
             // MATRIX MB
             // Copy elements to the first submatrix (top left)
-            qb1[i * quarter_dim + j] = mb[i * dim + j];
+            qb1[i * half_dim + j] = mb[i * dim + j];
             
             // Copy elements to the second submatrix (top right)
-            qb2[i * quarter_dim + j] = mb[i * dim + half_dim + j];
+            qb3[i * half_dim + j] = mb[i * dim + half_dim + j];
             
             // Copy elements to the third submatrix (bottom left)
-            qb3[i * quarter_dim + j] = mb[(half_dim + i) * dim + j];
+            qb2[i * half_dim + j] = mb[(half_dim + i) * dim + j];
             
             // Copy elements to the fourth submatrix (bottom right)
-            qb4[i * quarter_dim + j] = mb[(half_dim + i) * dim + half_dim + j];
+            qb4[i * half_dim + j] = mb[(half_dim + i) * dim + half_dim + j];
         }
     }
 
     // Initialize result matrices
-    int* p1 = new int[quarter_dim * quarter_dim];
-    int* p2 = new int[quarter_dim * quarter_dim];
-    int* p3 = new int[quarter_dim * quarter_dim];
-    int* p4 = new int[quarter_dim * quarter_dim];
-    int* p5 = new int[quarter_dim * quarter_dim];
-    int* p6 = new int[quarter_dim * quarter_dim];
-    int* p7 = new int[quarter_dim * quarter_dim];
-    int* tmp1 = new int[quarter_dim * quarter_dim];
-    int* tmp2 = new int[quarter_dim * quarter_dim];
-    int* tmp3 = new int[quarter_dim * quarter_dim];
-    int* tmp4 = new int[quarter_dim * quarter_dim];
-    int* tmp5 = new int[quarter_dim * quarter_dim];
+    int* p1 = new int[half_dim * half_dim];
+    int* p2 = new int[half_dim * half_dim];
+    int* p3 = new int[half_dim * half_dim];
+    int* p4 = new int[half_dim * half_dim];
+    int* p5 = new int[half_dim * half_dim];
+    int* p6 = new int[half_dim * half_dim];
+    int* p7 = new int[half_dim * half_dim];
+    int* tmp1 = new int[half_dim * half_dim];
+    int* tmp2 = new int[half_dim * half_dim];
+    int* tmp3 = new int[half_dim * half_dim];
+    int* tmp4 = new int[half_dim * half_dim];
+    int* tmp5 = new int[half_dim * half_dim];
+    int* tmp6 = new int[half_dim * half_dim];
+    int* tmp7 = new int[half_dim * half_dim];
+    int* tmp8 = new int[half_dim * half_dim];
+    int* tmp9 = new int[half_dim * half_dim];
+    int* tmp10 = new int[half_dim * half_dim];
+    int* tmp11 = new int[half_dim * half_dim];
+    int* tmp12 = new int[half_dim * half_dim];
+    int* tmp13 = new int[half_dim * half_dim];
     
     // Initialize result quarter matrices
-    int* result1 = new int[quarter_dim * quarter_dim];
-    int* result2 = new int[quarter_dim * quarter_dim];
-    int* result3 = new int[quarter_dim * quarter_dim];
-    int* result4 = new int[quarter_dim * quarter_dim];
+    int* result1 = new int[half_dim * half_dim];
+    int* result2 = new int[half_dim * half_dim];
+    int* result3 = new int[half_dim * half_dim];
+    int* result4 = new int[half_dim * half_dim];
 
     // Perform intermediate multiplications and recursive calls
-    strassen(half_dim, qa1, matrixAdd(quarter_dim, qb3, qb4, p1, false), p1);
-    strassen(half_dim, matrixAdd(quarter_dim, qa1, qa2, tmp3), qb4, p2);
-    strassen(half_dim, matrixAdd(quarter_dim, qa3, qa4, tmp3), qb1, p3);
-    strassen(half_dim, qa4, matrixAdd(quarter_dim, qb3, qb1, tmp3, false), p4);
-    strassen(half_dim, matrixAdd(quarter_dim, qa1, qa4, tmp3), matrixAdd(quarter_dim, qb1, qb4, tmp3), p5);
-    strassen(half_dim, matrixAdd(quarter_dim, qa2, qa4, tmp3, false), matrixAdd(quarter_dim, qb3, qb4, tmp3), p6);
-    strassen(half_dim, matrixAdd(quarter_dim, qa1, qa3, tmp3, false), matrixAdd(quarter_dim, qb1, qb2, tmp3), p7);
+    strassen(half_dim, qa1, matrixAdd(half_dim, qb3, qb4, p1, false), p1);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa2, tmp1), qb4, p2);
+    strassen(half_dim, matrixAdd(half_dim, qa3, qa4, tmp2), qb1, p3);
+    strassen(half_dim, qa4, matrixAdd(half_dim, qb3, qb1, tmp3, false), p4);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa4, tmp4), matrixAdd(half_dim, qb1, qb4, tmp5), p5);
+    strassen(half_dim, matrixAdd(half_dim, qa2, qa4, tmp6, false), matrixAdd(half_dim, qb3, qb4, tmp7), p6);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa3, tmp8, false), matrixAdd(half_dim, qb1, qb2, tmp9), p7);
     
     // Calculate the values of the submatrices that make up the result
-    matrixAdd(half_dim, matrixAdd(quarter_dim, p5, p4, tmp1), matrixAdd(quarter_dim, p2, p6, tmp2), result1, false);
+    matrixAdd(half_dim, matrixAdd(half_dim, p5, p4, tmp10), matrixAdd(half_dim, p2, p6, tmp11, false), result1, false);
     matrixAdd(half_dim, p1, p2, result2);
     matrixAdd(half_dim, p3, p4, result3);
-    matrixAdd(half_dim, matrixAdd(quarter_dim, p1, p5, tmp3), matrixAdd(quarter_dim, p3, p7, tmp4, false), result4, false);
+    matrixAdd(half_dim, matrixAdd(half_dim, p1, p5, tmp12), matrixAdd(half_dim, p3, p7, tmp13), result4, false);
     
     // Copy the submatrices back into the output matrix
     for (int i = 0; i < half_dim; i++) {
         for (int j = 0; j < half_dim; j++) {
-            result[i * dim + j] = result1[i * quarter_dim + j];
-            result[i * dim + half_dim + j] = result2[i * quarter_dim + j];
-            result[(half_dim + i) * dim + j] = result3[i * quarter_dim + j];
-            result[(half_dim + i) * dim + half_dim + j] = result4[i * quarter_dim + j];
+            result[i * dim + j] = result1[i * half_dim + j];
+            result[i * dim + half_dim + j] = result3[i * half_dim + j];
+            result[(half_dim + i) * dim + j] = result2[i * half_dim + j];
+            result[(half_dim + i) * dim + half_dim + j] = result4[i * half_dim + j];
         }
     }
+    printMatrix(result, dim);
 }
 
 // ----------------------------------------------------------------
