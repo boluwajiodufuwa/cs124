@@ -12,7 +12,7 @@
 using namespace std;
 
 void conventional(int dimension, int *ma, int *mb, int *result);
-void strassen(int dim, int* ma, int* mb, int* result);
+void strassen(int dim, int* ma, int* mb, int* result, int crossover);
 int* padMatrix(int* matrix, int dim);
 void printMatrix(int *matrix, int dim);
 void instantiateMatrix(int *matrix, int instantiator[], int dimension);

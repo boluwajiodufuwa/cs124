@@ -11,14 +11,15 @@ using namespace std;
 
 using namespace std::chrono;
 
-void printTrial(string type, int dim, double time, string unit) {
+void printTrial(string type, int dim, int crossover, double time, string unit) {
     cout << 
         type + " Multiplication performed multiplication on dimension: " 
-        + to_string(dim) + " in " + to_string(time) + " " + unit 
+        + to_string(dim) + " in " + to_string(time) + " " + unit + " with crossover: " +
+        to_string(crossover)
         << endl;
 }
 
-pair<double, double> crossOverExperimentTrial(int dim, int trials) {
+pair<double, double> crossOverExperimentTrial(int dim, int trials, int crossover) {
     double time_c = 0.0;
     double time_s = 0.0;
     for (int i = 0; i < trials; ++i) {
@@ -63,21 +64,29 @@ void runCrossOverExperiment() {
     myfile.open("crossover_experiment.csv");
 
     // Experimenting with granular values of n
-    for (int dim = 0; dim < 100; dim++){
-        pair<double, double> times = experimentTrial(dim, 4);
-        myfile << "Conventional" << "," << dim << "," << times.first << "\n";
-        printTrial("Conventional", dim, times.first, "seconds");
-        myfile << "Strassen" << "," << dim << "," << times.second << "\n";
-        printTrial("Strassen", dim, times.first, "seconds");
+    for (int dim = 1; dim < 100; dim++){
+        for (int n0 = 1; n0 < 50; n0++){
+            pair<double, double> times = crossOverExperimentTrial(dim, 4, n0);
+            // Outputs following to csv file "multiplication_type, dimension, crossover, time"
+            myfile << "Conventional" << "," << dim << "," << n0 << "," << times.first << "\n";
+            printTrial("Conventional", dim, n0, times.first, "seconds");
+
+            myfile << "Strassen" << "," << dim << "," << n0 << "," << times.first << "\n";
+            printTrial("Strassen", dim, n0, times.first, "seconds");
+        }
     }
 
     // Experimenting with larger values of n with a larger step
     for (int dim = 100; dim < 1100; dim += 200){
-        pair<double, double> times = experimentTrial(dim, 4); 
-        myfile << "Conventional" << "," << dim << "," << times.first << "\n";
-        printTrial("Conventional", dim, times.first, "seconds");
-        myfile << "Strassen" << "," << dim << "," << times.second << "\n";
-        printTrial("Strassen", dim, times.first, "seconds");   
+        for (int n0 = 1; n0 < 50; n0++){
+            pair<double, double> times = crossOverExperimentTrial(dim, 4, n0);
+            // Outputs following to csv file "multiplication_type, dimension, crossover, time"
+            myfile << "Conventional" << "," << dim << "," << n0 << "," << times.first << "\n";
+            printTrial("Conventional", dim, n0, times.first, "seconds");
+
+            myfile << "Strassen" << "," << dim << "," << n0 << "," << times.first << "\n";
+            printTrial("Strassen", dim, n0, times.first, "seconds");
+        }
     }
 
     myfile.close();
@@ -86,7 +95,7 @@ void runCrossOverExperiment() {
 // Counts the number of triangular paths in a graph A^3
 int countTriangles(int dim, int *matrix) {
     int count = 0;
-    for (int i = 0; i < dim, i++) {
+    for (int i = 0; i < dim; i++) {
         count += getMatrixValue(matrix, i, i, dim);
     }
 
@@ -99,7 +108,7 @@ void runTriangleExperiment() {
     myfile.open("triangle_experiment.csv");
 
     // Running triangle experiment for different values of probability
-    for (int prob = 1; prob < 6, prob++) {
+    for (int prob = 1; prob < 6; prob++) {
         int *matrix = new int[1024*1024];
         int *result = new int[1024*1024];
         getRandomMatrix(1024, matrix, 0, 1, prob);
@@ -110,8 +119,8 @@ void runTriangleExperiment() {
         int triangle_count = countTriangles(1024, result);
 
         // output to file "probability, number of triangles"
-        myfile << i << "," << triangle_count <<"\n";
-        
+        myfile << prob << "," << triangle_count <<"\n";
+
         delete[] matrix;
         delete[] result;
     }

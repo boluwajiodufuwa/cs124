@@ -82,69 +82,6 @@ void printMatrix(int *matrix, int dim) {
     }
 }
 
-// ----------------------------------------------------------------
-// Matrix Multiplication functions
-// ----------------------------------------------------------------
-
-// Conventional matrix multiplication algorithm
-void conventional(int dimension, int *ma, int *mb, int *result) {
-    for (int r = 0; r < dimension; r++) {
-        for (int c = 0; c < dimension; c++) {
-            setMatrixValue(result, r, c, dimension, 0);
-            for (int k = 0; k < dimension; k++) {
-                int prod = getMatrixValue(ma, r, k, dimension) * getMatrixValue(mb, k, c, dimension);
-                int curr_val = getMatrixValue(result, r, c, dimension);
-                setMatrixValue(result, r, c, dimension, curr_val+prod);
-            }
-        }
-    }
-}
-
-
-// ----------------------------------------------------------------
-// Miscellaneous functions
-// ----------------------------------------------------------------
-
-// Reads an Ascii file with 2d^2 lines and creates two d by d matrices
-pair<int*, int*> asciiToMatrices(char* fn, int dim) {
-    // Open the file using the filename from the command line argument
-    ifstream file(fn);
-
-    // Check that the file was opened successfully
-    if (!file.is_open()) {
-        cerr << "Error: could not open file " << fn << "\n";
-    }
-
-    // Create matrices
-    int *ma = new int[dim*dim];
-    int *mb = new int[dim*dim];
-
-    // Read content of files into matrices
-    string line;
-    int counter = 0;
-    while (getline(file, line)) {
-        int val = stoi(line);
-        int col = counter % dim;
-        int row = (counter - col) / dim;
-        if (counter < dim*dim) {
-            setMatrixValue(ma, row, col, dim, val);
-        } else {
-            setMatrixValue(mb, row - dim, col, dim, val);
-        }
-        counter++;
-    }
-
-    // Close the file
-    file.close();
-
-    return make_pair(ma,mb);
-}
-
-// Reads an Ascii file with 2d^2 lines and returns the product of the resulting matrices
-void asciiToProduct(string fn, int dim, int *result) {
-
-}
-
 // Helper function to add two square matrices
 int* matrixAdd(int dim, int* ma, int* mb, int* result, bool add = true) {
     if (add == true) {
@@ -182,12 +119,28 @@ int* padMatrix(int* matrix, int* padded, int dim) {
     return padded;
 }
 
-void strassen(int dim, int* ma, int* mb, int* result) {
+// ----------------------------------------------------------------
+// Matrix Multiplication functions
+// ----------------------------------------------------------------
+
+// Conventional matrix multiplication algorithm
+void conventional(int dimension, int *ma, int *mb, int *result) {
+    for (int r = 0; r < dimension; r++) {
+        for (int c = 0; c < dimension; c++) {
+            setMatrixValue(result, r, c, dimension, 0);
+            for (int k = 0; k < dimension; k++) {
+                int prod = getMatrixValue(ma, r, k, dimension) * getMatrixValue(mb, k, c, dimension);
+                int curr_val = getMatrixValue(result, r, c, dimension);
+                setMatrixValue(result, r, c, dimension, curr_val+prod);
+            }
+        }
+    }
+}
+
+void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
     // Base Case
-    int crossover = 1;
     if (dim == 1) {
         *result = *ma * *mb;
-        return;
     }
     else if (dim == crossover) {
         int* new_result = new int[(dim) * (dim)];
@@ -206,12 +159,14 @@ void strassen(int dim, int* ma, int* mb, int* result) {
         pad_mb = padMatrix(mb, pad_result, dim);
         
         // Call strassen on the newly padded matrices
-        strassen(dim+1, pad_ma, pad_mb, new_result);
+        strassen(dim+1, pad_ma, pad_mb, new_result, crossover);
     }
     // STEP 1: Splits the two n by n matrices into 4 quarter submatrices (currently functional for n=2^k)
     // Calculate the size of each submatrix (same dim for both matrices)
-    // Initialize quarter matrices
     int half_dim = dim / 2;
+    int quarter_dim = dim / 4;
+
+    // Initialize quarter matrices
     int* qa1 = new int[half_dim * half_dim];
     int* qa2 = new int[half_dim * half_dim];
     int* qa3 = new int[half_dim * half_dim];
@@ -281,13 +236,13 @@ void strassen(int dim, int* ma, int* mb, int* result) {
     int* result4 = new int[half_dim * half_dim];
 
     // Perform intermediate multiplications and recursive calls
-    strassen(half_dim, qa1, matrixAdd(half_dim, qb3, qb4, p1, false), p1);
-    strassen(half_dim, matrixAdd(half_dim, qa1, qa2, tmp1), qb4, p2);
-    strassen(half_dim, matrixAdd(half_dim, qa3, qa4, tmp2), qb1, p3);
-    strassen(half_dim, qa4, matrixAdd(half_dim, qb3, qb1, tmp3, false), p4);
-    strassen(half_dim, matrixAdd(half_dim, qa1, qa4, tmp4), matrixAdd(half_dim, qb1, qb4, tmp5), p5);
-    strassen(half_dim, matrixAdd(half_dim, qa2, qa4, tmp6, false), matrixAdd(half_dim, qb3, qb4, tmp7), p6);
-    strassen(half_dim, matrixAdd(half_dim, qa1, qa3, tmp8, false), matrixAdd(half_dim, qb1, qb2, tmp9), p7);
+    strassen(half_dim, qa1, matrixAdd(half_dim, qb3, qb4, p1, false), p1, crossover);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa2, tmp1), qb4, p2, crossover);
+    strassen(half_dim, matrixAdd(half_dim, qa3, qa4, tmp2), qb1, p3, crossover);
+    strassen(half_dim, qa4, matrixAdd(half_dim, qb3, qb1, tmp3, false), p4, crossover);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa4, tmp4), matrixAdd(half_dim, qb1, qb4, tmp5), p5, crossover);
+    strassen(half_dim, matrixAdd(half_dim, qa2, qa4, tmp6, false), matrixAdd(half_dim, qb3, qb4, tmp7), p6, crossover);
+    strassen(half_dim, matrixAdd(half_dim, qa1, qa3, tmp8, false), matrixAdd(half_dim, qb1, qb2, tmp9), p7, crossover);
     
     // Calculate the values of the submatrices that make up the result
     matrixAdd(half_dim, matrixAdd(half_dim, p5, p4, tmp10), matrixAdd(half_dim, p2, p6, tmp11, false), result1, false);
@@ -298,12 +253,56 @@ void strassen(int dim, int* ma, int* mb, int* result) {
     // Copy the submatrices back into the output matrix
     for (int i = 0; i < half_dim; i++) {
         for (int j = 0; j < half_dim; j++) {
-            result[i * dim + j] = result1[i * half_dim + j];
-            result[i * dim + half_dim + j] = result3[i * half_dim + j];
-            result[(half_dim + i) * dim + j] = result2[i * half_dim + j];
-            result[(half_dim + i) * dim + half_dim + j] = result4[i * half_dim + j];
+            result[i * dim + j] = result1[i * quarter_dim + j];
+            result[i * dim + half_dim + j] = result2[i * quarter_dim + j];
+            result[(half_dim + i) * dim + j] = result3[i * quarter_dim + j];
+            result[(half_dim + i) * dim + half_dim + j] = result4[i * quarter_dim + j];
         }
     }
+}
+
+// ----------------------------------------------------------------
+// Miscellaneous functions
+// ----------------------------------------------------------------
+
+// Reads an Ascii file with 2d^2 lines and creates two d by d matrices
+pair<int*, int*> asciiToMatrices(char* fn, int dim) {
+    // Open the file using the filename from the command line argument
+    ifstream file(fn);
+
+    // Check that the file was opened successfully
+    if (!file.is_open()) {
+        cerr << "Error: could not open file " << fn << "\n";
+    }
+
+    // Create matrices
+    int *ma = new int[dim*dim];
+    int *mb = new int[dim*dim];
+
+    // Read content of files into matrices
+    string line;
+    int counter = 0;
+    while (getline(file, line)) {
+        int val = stoi(line);
+        int col = counter % dim;
+        int row = (counter - col) / dim;
+        if (counter < dim*dim) {
+            setMatrixValue(ma, row, col, dim, val);
+        } else {
+            setMatrixValue(mb, row - dim, col, dim, val);
+        }
+        counter++;
+    }
+
+    // Close the file
+    file.close();
+
+    return make_pair(ma,mb);
+}
+
+// Reads an Ascii file with 2d^2 lines and returns the product of the resulting matrices
+void asciiToProduct(string fn, int dim, int *result) {
+
 }
 
 // ----------------------------------------------------------------
@@ -332,3 +331,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
