@@ -150,10 +150,7 @@ void conventional(int dimension, int *ma, int *mb, int *result) {
 
 void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
     // Base Case
-    if (dim == 1) {
-        *result = *ma * *mb;
-    }
-    else if (dim <= crossover) {
+    if (dim <= crossover) {
         conventional(dim, ma, mb, result);
     }
     else if (dim % 2 != 0) {
@@ -252,10 +249,29 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
         matrixAdd(half_dim, p1, p2, result2);
         matrixAdd(half_dim, p3, p4, result3);
         matrixAdd(half_dim, matrixAdd(half_dim, p1, p5, tmp12), matrixAdd(half_dim, p3, p7, tmp13), result4, false);
-        printMatrix(result1, half_dim);
-        printMatrix(result2, half_dim);
-        printMatrix(result3, half_dim);
-        printMatrix(result4, half_dim);
+
+        delete[] p1;
+        delete[] p2;
+        delete[] p3;
+        delete[] p4;
+        delete[] p5;
+        delete[] p6;
+        delete[] p7;
+        delete[] tmp0;
+        delete[] tmp1;
+        delete[] tmp2;
+        delete[] tmp3;
+        delete[] tmp4;
+        delete[] tmp5;
+        delete[] tmp6;
+        delete[] tmp7;
+        delete[] tmp8;
+        delete[] tmp9;
+        delete[] tmp10;
+        delete[] tmp11;
+        delete[] tmp12;
+        delete[] tmp13;
+
         int* newMatrix = new int[(dim+1) * (dim+1)];
         
         // Copy the submatrices back into the output matrix
@@ -268,6 +284,10 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
             }
         }
         unpadMatrix(newMatrix, result, dim);
+        delete[] result1;
+        delete[] result2;
+        delete[] result3;
+        delete[] result4;
     }
     else {
         // EVEN DIMENSION CASE
@@ -360,6 +380,28 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
         matrixAdd(half_dim, p3, p4, result3);
         matrixAdd(half_dim, matrixAdd(half_dim, p1, p5, tmp12), matrixAdd(half_dim, p3, p7, tmp13), result4, false);
         
+        delete[] p1;
+        delete[] p2;
+        delete[] p3;
+        delete[] p4;
+        delete[] p5;
+        delete[] p6;
+        delete[] p7;
+        delete[] tmp0;
+        delete[] tmp1;
+        delete[] tmp2;
+        delete[] tmp3;
+        delete[] tmp4;
+        delete[] tmp5;
+        delete[] tmp6;
+        delete[] tmp7;
+        delete[] tmp8;
+        delete[] tmp9;
+        delete[] tmp10;
+        delete[] tmp11;
+        delete[] tmp12;
+        delete[] tmp13;
+
         // Copy the submatrices back into the output matrix
         for (int i = 0; i < half_dim; i++) {
             for (int j = 0; j < half_dim; j++) {
@@ -369,6 +411,11 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
                 result[(half_dim + i) * dim + half_dim + j] = result4[i * half_dim + j];
             }
         }
+
+        delete[] result1;
+        delete[] result2;
+        delete[] result3;
+        delete[] result4;
     }
 }
 
