@@ -41,7 +41,7 @@ pair<double, double> crossOverExperimentTrial(int dim, int trials, int crossover
 
         // Timing Strassen's algorithm
         start = high_resolution_clock::now();
-        // strassen(dim, ma, mb, result);
+        strassen(dim, ma, mb, result, crossover);
         stop = high_resolution_clock::now();
 
         duration = duration_cast<seconds>(stop - start);
@@ -113,8 +113,8 @@ void runTriangleExperiment() {
         int *result = new int[1024*1024];
         getRandomMatrix(1024, matrix, 0, 1, prob);
 
-        // strassen(dim, matrix, matrix, result); //A^2
-        // strassen(dim, result, matrix, result); //A^3
+        strassen(dim, matrix, matrix, result); //A^2
+        strassen(dim, result, matrix, result); //A^3
 
         int triangle_count = countTriangles(1024, result);
 

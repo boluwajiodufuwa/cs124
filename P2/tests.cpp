@@ -86,7 +86,7 @@ bool test_strassen() {
     instantiateMatrix(test_solution, (int[]) {10,19,14,27}, dim);
     int *result = new int[dim*dim];
     
-    strassen(dim, ma, mb, result, 1);
+    strassen(dim, ma, mb, result, 5);
 
     if (!compareMatrices(result, test_solution, dim)) {
         cout << result[0] << endl;
