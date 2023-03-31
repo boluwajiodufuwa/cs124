@@ -5,7 +5,8 @@
 #include <random>
 #include <string>
 #include <vector>
-#include "tests.h"
+// #include "tests.h"
+// #include "experiment.h"
 
 using namespace std;
 
@@ -60,7 +61,7 @@ void getRandomMatrix(int dimension, int *result, int start_range, int end_range,
 
     for (int r = 0; r < dimension; r++) {
         for (int c = 0; c < dimension; c++) {
-            if (prob == 1) {
+            if (prob == 0) {
                 // Adding random int value to matrix
                 int val = rand_int(gen);
                 setMatrixValue(result, r, c, dimension, val);
@@ -148,6 +149,7 @@ void conventional(int dimension, int *ma, int *mb, int *result) {
     }
 }
 
+// Strassens algorithm that takes in a crossover
 void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
     // Base Case
     if (dim <= crossover) {
@@ -204,6 +206,9 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
                 qb4[i * half_dim + j] = pad_mb[(half_dim + i) * (dim+1) + half_dim + j];
             }
         }
+
+        delete[] pad_mb;
+        delete[] pad_ma;
         
         // Initialize result matrices
         int* p1 = new int[half_dim * half_dim];
@@ -250,6 +255,15 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
         matrixAdd(half_dim, p3, p4, result3);
         matrixAdd(half_dim, matrixAdd(half_dim, p1, p5, tmp12), matrixAdd(half_dim, p3, p7, tmp13), result4, false);
 
+
+        delete[] qa1;
+        delete[] qa2;
+        delete[] qa3;
+        delete[] qa4;
+        delete[] qb1;
+        delete[] qb2;
+        delete[] qb3;
+        delete[] qb4;
         delete[] p1;
         delete[] p2;
         delete[] p3;
@@ -284,6 +298,8 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
             }
         }
         unpadMatrix(newMatrix, result, dim);
+
+        delete[] newMatrix;
         delete[] result1;
         delete[] result2;
         delete[] result3;
@@ -380,6 +396,14 @@ void strassen(int dim, int* ma, int* mb, int* result, int crossover) {
         matrixAdd(half_dim, p3, p4, result3);
         matrixAdd(half_dim, matrixAdd(half_dim, p1, p5, tmp12), matrixAdd(half_dim, p3, p7, tmp13), result4, false);
         
+        delete[] qa1;
+        delete[] qa2;
+        delete[] qa3;
+        delete[] qa4;
+        delete[] qb1;
+        delete[] qb2;
+        delete[] qb3;
+        delete[] qb4;
         delete[] p1;
         delete[] p2;
         delete[] p3;
@@ -459,8 +483,15 @@ pair<int*, int*> asciiToMatrices(char* fn, int dim) {
 }
 
 // Reads an Ascii file with 2d^2 lines and returns the product of the resulting matrices
-void asciiToProduct(string fn, int dim, int *result) {
+void asciiToProduct(char* fn, int dim, int *result) {
+    pair<int*, int*> matrices = asciiToMatrices(fn, dim);
+    int opt_crossover = 10;
 
+    strassen(dim, matrices.first, matrices.second, result, opt_crossover);
+
+    for (int i = 0; i < dim; i++) {
+        cout << getMatrixValue(result, i, i, dim) << "\n";
+    }
 }
 
 // ----------------------------------------------------------------
@@ -472,19 +503,14 @@ int main(int argc, char *argv[]) {
     int dimension = atoi(argv[2]);
     char* inputfile = argv[3];
 
+    int* result = new int[dimension * dimension];
+
     if (do_tests == 1) {
-        run_tests();
+        // runTriangleExperiment();
+    } else {
+        asciiToProduct(inputfile, dimension, result);
     }
 
-    // if (inputfile[0] != '\0') {
-    //     printMatrix(asciiToMatrices(inputfile, dimension).first, dimension);
-    //     cout << "\n\n";
-    //     printMatrix(asciiToMatrices(inputfile, dimension).second, dimension);
-    // }
-
-    int *result = new int[dimension * dimension];
-    getRandomMatrix(dimension, result, 0, 2, 1);
-    printMatrix(result, dimension);
     delete[] result;
 
     return 0;
