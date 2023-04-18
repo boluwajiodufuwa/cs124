@@ -28,9 +28,11 @@ int residue(vector<int> solution, vector<int> seq) {
 // ----------------------------------------------------------------
 // Heuristic Functions
 // ----------------------------------------------------------------
+
+// Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
 vector<int> karmarkarKarp(const vector<int>& a) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
-    map<int, int> sign_mapping;
+    vector <int> sign_mapping;
 
     // Initialize priority queue for inputted list of numbers (a)
     for (int i = 0; i < a.size(); i++) {
@@ -54,21 +56,15 @@ vector<int> karmarkarKarp(const vector<int>& a) {
         max_heap.push({diff, largest_idx});
     }
 
-    // Initialize list to return the numbers with their corresponding sign
-    vector<int> result(a.size());
-    for (int i = 0; i < a.size(); i++) {
-        result[i] = a[i] * sign_mapping[i];
-    }
-
-    return result;
+    // Return list of signs (1 or -1) for corresponding partitions
+    return sign_mapping;
 }
+
+
 
 // ----------------------------------------------------------------
 // Main
 // ----------------------------------------------------------------
-
-
-
 int main(int argc, char *argv[]) {
     int do_tests = atoi(argv[1]);
     int algorithm = atoi(argv[2]);
