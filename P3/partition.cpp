@@ -7,22 +7,77 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <cstdint>
 
 using namespace std;
 
-// Note that solutions of any form and inputs/sequences are just represented by regular vectors
+// Note that solutions of any form are just represented by regular vectors
+// Inputs/sequences are vectors of 64 bit ints "int64_t"
 
 // ----------------------------------------------------------------
 // Miscellaneous functions
 // ----------------------------------------------------------------
 
+// Power function for large numbers
+int64_t power(int64_t base, int64_t exponent) {
+    int64_t result = 1;
+    for (int i = 0; i < exponent; i++) {
+        result *= base;
+    }
+    return result;
+}
+
 // Takes in a solution in the standard form (1s and -1s) and a sequence and returns residue
-int residue(vector<int> solution, vector<int> seq) {
-    int residue = 0;
+int64_t residue(vector<int> solution, vector<int64_t> seq) {
+    int64_t residue = 0;
     for (int i = 0; i < solution.size(); i++) {
         residue += solution[i] * seq[i];
     }
     return residue;
+}
+
+// Creates a random sequence of 100 numbers in the range [0, 10^12]
+vector<int64_t> getRandomSequence() {
+    // unfirom random generators
+    random_device rand_dev;
+    default_random_engine gen(rand_dev());
+    uniform_int_distribution<int64_t> rand_int(1, power(10, 12));
+
+    vector<int64_t> result;
+
+    // Adding random values to result sequence
+    for (int i = 0; i < 100; i++) {
+        int val = rand_int(gen);
+        result.push_back(val);
+    }
+
+    return result;
+}
+
+vector<int64_t> asciiToSequence(char* fn) {
+    // Open the file using the filename from the command line argument
+    ifstream file(fn);
+
+    // Check that the file was opened successfully
+    if (!file.is_open()) {
+        cerr << "Error: could not open file " << fn << "\n";
+    }
+
+    // Result sequence
+    vector<int64_t> result;
+
+    // Read content of files into matrices
+    string line;
+    while (getline(file, line)) {
+        int64_t val = stoll(line);
+        result.push_back(val);
+    }
+
+    // Close the file
+    file.close();
+
+    return result;
+
 }
 
 // ----------------------------------------------------------------
@@ -31,7 +86,7 @@ int residue(vector<int> solution, vector<int> seq) {
 
 // Karmar-Karp algorithm
 // Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
-vector<int> karmarkarKarp(vector<int> nums) {
+vector<int> karmarkarKarp(vector<int64_t> nums) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
     vector <int> sign_mapping;
 
@@ -63,19 +118,19 @@ vector<int> karmarkarKarp(vector<int> nums) {
 
 // Repeated Random
 //
-vector<int> repeatedRandom(vector<int> nums) {
+vector<int> repeatedRandom(vector<int64_t> nums) {
 
 }
 
 // Hill Climbing
 //
-vector<int> hillClimbing(vector<int> nums) {
+vector<int> hillClimbing(vector<int64_t> nums) {
 
 }
 
 // Simulated Annealing
 //
-vector<int> simulatedAnnealing(vector<int> nums) {
+vector<int> simulatedAnnealing(vector<int64_t> nums) {
 
 }
 
