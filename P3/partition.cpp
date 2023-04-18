@@ -27,6 +27,41 @@ int residue(vector<int> solution, vector<int> seq) {
 // Heuristic Functions
 // ----------------------------------------------------------------
 
+vector<int> karmarkarKarp(const vector<int>& a) {
+    priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
+    map<int, int> sign_mapping;
+
+    // Initialize priority queue for inputted list of numbers (a)
+    for (int i = 0; i < a.size(); i++) {
+        max_heap.push({a[i], i});
+        sign_mapping[i] = 1;
+    }
+
+    // Perform Karmar-Karp algorithm on priority queue
+    while (max_heap.size() > 1) {
+        auto largest = max_heap.top();
+        max_heap.pop();
+        auto second_largest = max_heap.top();
+        max_heap.pop();
+
+        int diff = largest.first - second_largest.first;
+        int largest_idx = largest.second;
+        int second_largest_idx = second_largest.second;
+
+        // Set the signs for the corresponding partitions
+        sign_mapping[largest_idx] = -sign_mapping[second_largest_idx];
+        max_heap.push({diff, largest_idx});
+    }
+
+    // Initialize list to return the numbers with their corresponding sign
+    vector<int> result(a.size());
+    for (int i = 0; i < a.size(); i++) {
+        result[i] = a[i] * sign_mapping[i];
+    }
+
+    return result;
+}
+
 // ----------------------------------------------------------------
 // Main
 // ----------------------------------------------------------------
