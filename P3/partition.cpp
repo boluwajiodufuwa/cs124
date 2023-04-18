@@ -5,6 +5,8 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <queue>
+#include <map>
 
 using namespace std;
 
@@ -25,6 +27,10 @@ int residue(vector<int> solution, vector<int> seq) {
 
 // ----------------------------------------------------------------
 // Heuristic Functions
+// ----------------------------------------------------------------
+
+// ----------------------------------------------------------------
+// Main
 // ----------------------------------------------------------------
 
 vector<int> karmarkarKarp(const vector<int>& a) {
@@ -61,10 +67,6 @@ vector<int> karmarkarKarp(const vector<int>& a) {
 
     return result;
 }
-
-// ----------------------------------------------------------------
-// Main
-// ----------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
     int do_tests = atoi(argv[1]);
