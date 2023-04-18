@@ -29,14 +29,15 @@ int residue(vector<int> solution, vector<int> seq) {
 // Heuristic Functions
 // ----------------------------------------------------------------
 
+// Karmar-Karp algorithm
 // Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
-vector<int> karmarkarKarp(const vector<int>& a) {
+vector<int> karmarkarKarp(vector<int> nums) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
     vector <int> sign_mapping;
 
     // Initialize priority queue for inputted list of numbers (a)
-    for (int i = 0; i < a.size(); i++) {
-        max_heap.push({a[i], i});
+    for (int i = 0; i < nums.size(); i++) {
+        max_heap.push({nums[i], i});
         sign_mapping[i] = 1;
     }
 
@@ -60,7 +61,23 @@ vector<int> karmarkarKarp(const vector<int>& a) {
     return sign_mapping;
 }
 
+// Repeated Random
+//
+vector<int> repeatedRandom(vector<int> nums) {
 
+}
+
+// Hill Climbing
+//
+vector<int> hillClimbing(vector<int> nums) {
+
+}
+
+// Simulated Annealing
+//
+vector<int> simulatedAnnealing(vector<int> nums) {
+
+}
 
 // ----------------------------------------------------------------
 // Main
