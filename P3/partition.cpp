@@ -28,11 +28,6 @@ int residue(vector<int> solution, vector<int> seq) {
 // ----------------------------------------------------------------
 // Heuristic Functions
 // ----------------------------------------------------------------
-
-// ----------------------------------------------------------------
-// Main
-// ----------------------------------------------------------------
-
 vector<int> karmarkarKarp(const vector<int>& a) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
     map<int, int> sign_mapping;
@@ -67,6 +62,12 @@ vector<int> karmarkarKarp(const vector<int>& a) {
 
     return result;
 }
+
+// ----------------------------------------------------------------
+// Main
+// ----------------------------------------------------------------
+
+
 
 int main(int argc, char *argv[]) {
     int do_tests = atoi(argv[1]);
