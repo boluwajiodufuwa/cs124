@@ -15,8 +15,8 @@ using namespace std;
 // ----------------------------------------------------------------
 
 // Takes in a solution in the standard form (1s and -1s) and a sequence and returns residue
-vector<int> residue(vector<int> solution, vector<int> seq) {
-    int resiude = 0;
+int residue(vector<int> solution, vector<int> seq) {
+    int residue = 0;
     for (int i = 0; i < solution.size(); i++) {
         residue += solution[i] * seq[i];
     }
