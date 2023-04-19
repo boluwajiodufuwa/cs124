@@ -80,6 +80,23 @@ vector<int64_t> asciiToSequence(char* fn) {
 
 }
 
+std::vector<int> random_bits(int n) {
+    std::vector<int> bits(n);
+    std::random_device rd;
+
+    // Seed the random number generator with the random device
+    std::mt19937 rng(rd()); 
+
+    // Define a uniform distribution for generating random bits
+    std::uniform_int_distribution<int> dist(0, 1); 
+
+    for (int i = 0; i < n; ++i) {
+        bits[i] = dist(rng) == 0 ? -1 : 1;
+    }
+
+    return bits;
+}
+
 // ----------------------------------------------------------------
 // Heuristic Functions
 // ----------------------------------------------------------------
@@ -117,9 +134,25 @@ vector<int> karmarkarKarp(vector<int64_t> nums) {
 }
 
 // Repeated Random
-//
+// Takes list of nonnegative integers and randomly replaces lis
 vector<int> repeatedRandom(vector<int64_t> nums) {
+    // Create a random solution 
+    int n = nums.size();
+    vector<int> solution = random_bits(n);
 
+    // Test max_iteration (TODO; WHAT IS MAX_ITER)
+    int max_iter = 1000;
+
+    for (int i = 0; i < max_iter; i++) {
+        // Initialize a different random solution and substitute it if its residue is lower
+        vector<int> curr_rand = random_bits(n);
+        if (residue(curr_rand, nums) < residue(solution, nums)) {
+            solution = curr_rand;
+        }
+
+    }   
+
+    return solution;
 }
 
 // Hill Climbing
