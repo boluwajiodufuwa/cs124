@@ -28,7 +28,7 @@ int64_t power(int64_t base, int64_t exponent) {
 }
 
 // Takes in a solution in the standard form (1s and -1s) and a sequence and returns residue
-int64_t residue(vector<int> solution, vector<int64_t> seq) {
+int64_t residue(vector<int64_t> solution, vector<int64_t> seq) {
     int64_t residue = 0;
     for (int i = 0; i < solution.size(); i++) {
         residue += solution[i] * seq[i];
@@ -80,8 +80,9 @@ vector<int64_t> asciiToSequence(char* fn) {
 
 }
 
-std::vector<int> random_bits(int n) {
-    std::vector<int> bits(n);
+// Generates random list of bits of length n to be used as potential solution for partition
+std::vector<int64_t> random_bits(int64_t n) {
+    std::vector<int64_t> bits(n);
     std::random_device rd;
 
     // Seed the random number generator with the random device
@@ -97,15 +98,22 @@ std::vector<int> random_bits(int n) {
     return bits;
 }
 
+// Generates the neighbor of a given input vector (defined by prog set as a list with 1 or 2 values being different)
+std::vector<int64_t> find_neighbor(vector<int64_t> nums) {
+    vector<int64_t> neighbor;
+    
+    return neighbor;
+}
+
 // ----------------------------------------------------------------
 // Heuristic Functions
 // ----------------------------------------------------------------
 
 // Karmar-Karp algorithm
 // Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
-vector<int> karmarkarKarp(vector<int64_t> nums) {
+vector<int64_t> karmarkarKarp(vector<int64_t> nums) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
-    vector <int> sign_mapping;
+    vector<int64_t> sign_mapping;
 
     // Initialize priority queue for inputted list of numbers (a)
     for (int i = 0; i < nums.size(); i++) {
@@ -134,18 +142,18 @@ vector<int> karmarkarKarp(vector<int64_t> nums) {
 }
 
 // Repeated Random
-// Takes list of nonnegative integers and randomly replaces lis
-vector<int> repeatedRandom(vector<int64_t> nums) {
+// Takes list of nonnegative integers and randomly generates/replaces solutions until we've reached last iteration
+vector<int64_t> repeatedRandom(vector<int64_t> nums) {
     // Create a random solution 
     int n = nums.size();
-    vector<int> solution = random_bits(n);
+    vector<int64_t> solution = random_bits(n);
 
     // Test max_iteration (TODO; WHAT IS MAX_ITER)
     int max_iter = 1000;
 
     for (int i = 0; i < max_iter; i++) {
         // Initialize a different random solution and substitute it if its residue is lower
-        vector<int> curr_rand = random_bits(n);
+        vector<int64_t> curr_rand = random_bits(n);
         if (residue(curr_rand, nums) < residue(solution, nums)) {
             solution = curr_rand;
         }
@@ -156,14 +164,30 @@ vector<int> repeatedRandom(vector<int64_t> nums) {
 }
 
 // Hill Climbing
-//
-vector<int> hillClimbing(vector<int64_t> nums) {
+// Takes list of nonnegative integers and randomly generates a solution and finds the most optimal neighboring solution until we've reached last iteration
+vector<int64_t> hillClimbing(vector<int64_t> nums) {
+    // Create a random solution 
+    int n = nums.size();
+    vector<int64_t> solution = random_bits(n);
 
+    // Test max_iteration (TODO; WHAT IS MAX_ITER)
+    int max_iter = 1000;
+
+    for (int i = 0; i < max_iter; i++) {
+        // Find a neighbor of the current solution
+        vector<int64_t> neighbor = find_neighbor(solution);
+        if (residue(neighbor, nums) < residue(solution, nums)) {
+            solution = neighbor;
+        }
+
+    }   
+
+    return solution;
 }
 
 // Simulated Annealing
 //
-vector<int> simulatedAnnealing(vector<int64_t> nums) {
+vector<int64_t> simulatedAnnealing(vector<int64_t> nums) {
 
 }
 
