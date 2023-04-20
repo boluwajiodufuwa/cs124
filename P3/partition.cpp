@@ -226,7 +226,10 @@ bool anneal_prob(int64_t res_Sp, int64_t res_S, int64_t iter) {
     double T_iter = pow(10, 10) * pow(0.8, floor((iter + 1) / 300.0));
     double exponent = -(static_cast<double>(res_Sp) - res_S) / T_iter;
 
-    return (bin_int(gen) / RAND_MAX) < exp(exponent);
+    // return (bin_int(gen) / RAND_MAX) < exp(exponent); OLD CODE (TESTING SMTH NEW)
+
+    std::uniform_real_distribution<double> rand_float(0.0, 1.0);
+    return rand_float(gen) < exp(exponent);
 }
 
 
