@@ -12,7 +12,7 @@
 #include <ctime>
 #include <cmath>
 #include <cstdlib>
-#include "tests.h"
+// #include "tests.h"
 
 using namespace std;
 
@@ -23,12 +23,12 @@ using namespace std;
 // Miscellaneous functions
 // ----------------------------------------------------------------
 
-int MAX_ITER = 1000;
+int64_t MAX_ITER = 25000;
 
 // Power function for large numbers
 int64_t power(int64_t base, int64_t exponent) {
     int64_t result = 1;
-    for (int i = 0; i < exponent; i++) {
+    for (int64_t i = 0; i < exponent; i++) {
         result *= base;
     }
     return result;
@@ -37,7 +37,7 @@ int64_t power(int64_t base, int64_t exponent) {
 // Takes in a solution in the standard form (1s and -1s) and a sequence and returns residue
 int64_t residue(vector<int64_t> solution, vector<int64_t> seq) {
     int64_t residue = 0;
-    for (int i = 0; i < solution.size(); i++) {
+    for (int64_t i = 0; i < solution.size(); i++) {
         residue += solution[i] * seq[i];
     }
     return residue;
@@ -53,8 +53,8 @@ vector<int64_t> getRandomSequence() {
     vector<int64_t> result;
 
     // Adding random values to result sequence
-    for (int i = 0; i < 100; i++) {
-        int val = rand_int(gen);
+    for (int64_t i = 0; i < 100; i++) {
+        int64_t val = rand_int(gen);
         result.push_back(val);
     }
 
@@ -92,14 +92,14 @@ vector<int64_t> partition(const vector<int64_t>& A, vector<int64_t> P = {}) {
     size_t sz = A.size();
 
     if (P.empty()) {
-        srand(std::time(0));
+        srand(time(0));
         P.resize(sz);
         for (size_t i = 0; i < sz; i++) {
-            P[i] = std::rand() % sz;
+            P[i] = rand() % sz;
         }
     }
 
-    std::vector<int64_t> A_prime(sz, 0);
+    vector<int64_t> A_prime(sz, 0);
 
     for (size_t j = 0; j < sz; j++) {
         A_prime[P[j]] += A[j];
@@ -120,7 +120,7 @@ vector<int64_t> random_bits(int64_t n) {
     // Define a uniform distribution for generating random bits
     uniform_int_distribution<int> dist(0, 1); 
 
-    for (int i = 0; i < n; ++i) {
+    for (int64_t i = 0; i < n; ++i) {
         bits[i] = dist(rng) == 0 ? -1 : 1;
     }
 
@@ -132,99 +132,72 @@ vector<int64_t> random_bits(int64_t n) {
 // ----------------------------------------------------------------
 
 // Karmar-Karp algorithm
-// Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
-int karmarkarKarp(vector<int64_t>& nums) {
+int64_t karmarkarKarp(vector<int64_t>& nums) {
     // Initialize priority queue for inputted list of numbers (a)   
-    priority_queue<int64_t> max_heap;
-    
-    for (int i = 0; i < nums.size(); i++) {
-        max_heap.push(nums[i]);
+    priority_queue<int64_t> maxHeap(nums.begin(), nums.end());
+
+    int64_t max1;
+    int64_t max2;
+
+    while (max2 != 0) { // Keep running until max2 is 0
+        // Pop the two maximum values from the heap
+        max1 = maxHeap.top();
+        maxHeap.pop();
+        max2 = maxHeap.top();
+        maxHeap.pop();
+
+        // Push the absolute difference of max1 and max2 back into the heap
+        maxHeap.push(abs(max1 - max2));
+        // Push 0 back into the heap
+        maxHeap.push(0);
+
+        cout << "Max: " << max1 << endl;
     }
 
-    int64_t max1 = 0;
-    int64_t max2 = 0;
- 
-    while (max2 != 0) {
-        max1 = max_heap.pop();
-        max2 = max_heap.pop();
-        max_heap.push(abs(max1 - max2));
-        max_heap.push(0);
-    }
 
     return max1;
 }
 
 // Repeated Random
 // Takes list of nonnegative integers and randomly generates/replaces solutions until we've reached last iteration
-int repeatedRandom(vector<int64_t>& nums, int max_iter = 25000) {
+int64_t repeatedRandom(vector<int64_t>& nums) {
     // Create a random solution 
-    int n = nums.size();
-    vector<int64_t> solution = random_bits(n);
+    int64_t solution = accumulate(nums.begin(), nums.end(), 0);
+    srand(time(0));
 
-    for (int i = 0; i < MAX_ITER; i++) {
-        // Initialize a different random solution and substitute it if its residue is lower
-        vector<int64_t> curr_rand = random_bits(n);
-        if (residue(curr_rand, nums) < residue(solution, nums)) {
-            solution = curr_rand;
-        }
-
-    }   
-
-    return solution;
-
-    int solution = accumulate(nums.begin(), nums.end(), 0);
-    srand(std::time(0));
-
-    for (int i = 0; i < max_iter; i++) {
-        int residueSp = 0;
-        for (int elt : nums) {
+    for (int64_t i = 0; i < MAX_ITER; i++) {
+        int64_t residueSp = 0;
+        for (int64_t elt : nums) {
             residueSp += elt * (rand() % 2 == 0 ? 1 : -1);
         }
         residueSp = abs(residueSp);
-        best = min(best, residueSp);
+        solution = min(solution, residueSp);
     }
 
-    return best;
+    return solution;
 }
 
-
-
-int repeat_rand(const std::vector<int>& A, int max_iter = 25000) {
-    int best = std::accumulate(A.begin(), A.end(), 0);
-    std::srand(std::time(0));
-
-    for (int i = 0; i < max_iter; i++) {
-        int residueSp = 0;
-        for (int elt : A) {
-            residueSp += elt * (std::rand() % 2 == 0 ? 1 : -1);
-        }
-        residueSp = abs(residueSp);
-        best = std::min(best, residueSp);
-    }
-
-    return best;
-}
 
 // Hill Climbing
-// According to ed, max_iter should be 25k
+// According to ed, MAX_ITER should be 25k
 // Takes list of nonnegative integers and randomly generates a solution and finds the most optimal neighboring solution until we've reached last iteration
-int hillClimbing(const vector<int64_t>& nums) {
+int64_t hillClimbing(const vector<int64_t>& nums) {
     // Randomized solution creation
-    int n = nums.size();
+    int64_t n = nums.size();
     vector<int64_t> solution = random_bits(n);
-    int best_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+    int64_t best_sol = abs(accumulate(solution.begin(), solution.end(), 0));
 
-    for (int iter = 0; iter < MAX_ITER; iter++) {
-        int i1 = rand() % n;
-        int i2 = i1;
+    for (int64_t iter = 0; iter < MAX_ITER; iter++) {
+        int64_t i1 = rand() % n;
+        int64_t i2 = i1;
         while (i2 == i1) {
             i2 = rand() % n;
         }
 
-        int si1 = solution[i1];
-        int si2 = solution[i2];
+        int64_t si1 = solution[i1];
+        int64_t si2 = solution[i2];
 
-        int new_sol = best_sol - si1 - si1;
+        int64_t new_sol = best_sol - si1 - si1;
 
         if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
             new_sol -= si2 + si2;
@@ -244,34 +217,34 @@ int hillClimbing(const vector<int64_t>& nums) {
 }
 
 
-bool anneal_prob(int res_Sp, int res_S, int iter) {
-    double T_iter = std::pow(10, 10) * std::pow(0.8, std::floor((iter + 1) / 300.0));
+bool anneal_prob(int64_t res_Sp, int64_t res_S, int64_t iter) {
+    double T_iter = pow(10, 10) * pow(0.8, floor((iter + 1) / 300.0));
     double exponent = -(static_cast<double>(res_Sp) - res_S) / T_iter;
 
-    srand(std::time(0));
-    return (static_cast<double>(std::rand()) / RAND_MAX) < std::exp(exponent);
+    srand(time(0));
+    return (static_cast<double>(rand()) / RAND_MAX) < exp(exponent);
 }
 
 
-int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
+int64_t simulatedAnnealing(const vector<int64_t>& nums) {
     // Randomized solution creation
-    int n = nums.size();
+    int64_t n = nums.size();
     vector<int64_t> solution = random_bits(n);
 
-    int curr_sol = abs(accumulate(solution.begin(), solution.end(), 0));
-    int best_sol = curr_sol;
+    int64_t curr_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+    int64_t best_sol = curr_sol;
 
-    for (int i = 0; i < max_iter; i++) {
-        int i1 = rand() % n;
-        int i2 = i1;
+    for (int64_t i = 0; i < MAX_ITER; i++) {
+        int64_t i1 = rand() % n;
+        int64_t i2 = i1;
         while (i2 == i1) {
             i2 = rand() % n;
         }
 
-        int si1 = solution[i1];
-        int si2 = solution[i2];
+        int64_t si1 = solution[i1];
+        int64_t si2 = solution[i2];
 
-        int new_sol = curr_sol - si1 - si1;
+        int64_t new_sol = curr_sol - si1 - si1;
 
         if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
             new_sol -= si2 + si2;
@@ -296,18 +269,99 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
 // ----------------------------------------------------------------
 // Prepartitioned Functions
 // ----------------------------------------------------------------
-int prepartRepeatRand(const std::vector<int64_t>& A, int max_iter = 25000) {
-    double best = std::numeric_limits<double>::infinity();
 
-    std::srand(std::time(0));
+// Prepartioned Repeat Random
+int64_t prepartRepeatRand(const vector<int64_t>& nums) {
+    double best = numeric_limits<double>::infinity();
 
-    for (int i = 0; i < max_iter; ++i) {
-        vector<int64_t> new_A = partition(A);
-        int sol = karmarkarKarp(new_A);
-        best = std::min(best, static_cast<double>(sol));
+    srand(time(0));
+
+    for (int64_t i = 0; i < MAX_ITER; ++i) {
+        vector<int64_t> new_A = partition(nums);
+        int64_t sol = karmarkarKarp(new_A);
+        best = min(best, static_cast<double>(sol));
     }
 
-    return static_cast<int>(best);
+    return static_cast<int64_t>(best);
+}
+
+// Prepartioned Hill Climbing
+int64_t prepartHillClimbing(const vector<int64_t>& nums) {
+    int64_t sz = nums.size();
+    srand(time(0));
+    
+    vector<int64_t> P(sz);
+
+    for (int64_t i = 0; i < sz; ++i) {
+        P[i] = rand() % sz;
+    }
+
+    vector<int64_t> numsPrime = partition(nums, P);
+    int64_t best_sol = karmarkarKarp(numsPrime);
+
+    for (int64_t idx = 0; idx < MAX_ITER; ++idx) {
+        int64_t i, j;
+
+        while (P[idx] == j) {
+            i = rand() % sz;
+            j = rand() % sz;
+        }
+
+        int64_t temp = P[idx];
+        P[idx] = j;
+
+        numsPrime = partition(nums, P);
+        int64_t new_sol = karmarkarKarp(numsPrime);
+
+        if (best_sol > new_sol) {
+            best_sol = new_sol;
+        } else {
+            P[i] = temp;
+        }
+    }
+
+    return best_sol;
+}
+
+// Prepartioned Simulated Annealing
+int64_t prepartSimAnneal(const vector<int64_t>& nums) {
+    int64_t sz = nums.size();
+
+    srand(time(0));
+
+    vector<int64_t> P(sz);
+    for (int64_t i = 0; i < sz; ++i) {
+        P[i] = rand() % sz;
+    }
+
+    vector<int64_t> numsPrime = partition(nums, P);
+
+    int64_t curr_sol = karmarkarKarp(numsPrime);
+    int64_t best_sol = curr_sol;
+
+    for (int64_t it = 0; it < MAX_ITER; ++it) {
+        int64_t i, j;
+        while (P[i] == j) {
+            i = rand() % sz;
+            j = rand() % sz;
+        }
+
+        int64_t temp = P[i];
+        P[i] = j;
+
+        numsPrime = partition(nums, P);
+        int64_t new_sol = karmarkarKarp(numsPrime);
+
+        if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, it)) {
+            curr_sol = new_sol;
+        } else {
+            P[i] = temp;
+        }
+
+        best_sol = min(best_sol, curr_sol);
+    }
+
+    return best_sol;
 }
 
 // ----------------------------------------------------------------
@@ -321,27 +375,31 @@ int main(int argc, char *argv[]) {
     int64_t residue = 0;
     vector<int64_t> sequence = asciiToSequence(inputfile);
 
-    if (do_tests == 1) {
-        run_tests();
+    // for (int i = 0; i < sequence.size(); i++) {
+    //     cout << sequence[i] << endl;
+    // }
+
+    // if (do_tests == 1) {
+    //     run_tests();
+    // }
+
+    if (algorithm == 0) {
+        residue = karmarkarKarp(sequence);
+    } else if (algorithm == 1) {
+        residue = repeatedRandom(sequence);
+    } else if (algorithm == 2) {
+        residue = hillClimbing(sequence);
+    } else if (algorithm == 3) {
+        residue = simulatedAnnealing(sequence);
+    } else if (algorithm == 11) {
+        residue = prepartRepeatRand(sequence);
+    } else if (algorithm == 12) {
+        residue = prepartHillClimbing(sequence);
+    } else if (algorithm ==  13) {
+        residue = prepartSimAnneal(sequence);
     }
 
-    if (algorithm == "0") {
-        residue = residue(karmar);
-    } else if (algorithm == "1") {
-
-    } else if (algorithm == "2") {
-
-    } else if (algorithm == "3") {
-
-    } else if (algorithm == "11") {
-
-    } else if (algorithm == "12") {
-
-    } else if (algorithm ==  "13") {
-
-    }
-
-    cout << residue;
+    cout << residue << endl;
 
     return 0;
 }

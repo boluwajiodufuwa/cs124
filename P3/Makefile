@@ -21,4 +21,6 @@ link: partition.o tests.o experiment.o
 tests:
 	make objects
 	make link
-	./partition 1 0 0 
+	./partition 1 0 0
+
+	
