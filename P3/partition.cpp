@@ -95,7 +95,6 @@ vector<int64_t> asciiToSequence(char* fn) {
 
 }
 
-// Function used for prepartitioned functions
 vector<int64_t> partition(const vector<int64_t>& A, vector<int64_t> P = {}) {
     size_t sz = A.size();
     uniform_int_distribution<int64_t> rand_int(1, sz-1);
@@ -115,7 +114,6 @@ vector<int64_t> partition(const vector<int64_t>& A, vector<int64_t> P = {}) {
 
     return A_prime;
 }
-
 
 // Generates random list of bits of length n to be used as potential solution for partition
 vector<int64_t> random_bits(int64_t n) {
@@ -237,14 +235,12 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
     vector<int64_t> solution = random_bits(n);
     uniform_int_distribution<int64_t> rand_int(1, n-1);
 
-    int64_t curr_sol = large_abs(accumulate(solution.begin(), solution.end(), 0LL));
+    int64_t curr_sol = large_abs(residue(solution, nums));
     int64_t best_sol = curr_sol;
-    cout <<  "Best sol1: " << best_sol << endl;
     
     for (int64_t i = 0; i < MAX_ITER; i++) {
         int64_t i1 = rand_int(gen);
         int64_t i2 = rand_int(gen);
-        cout <<  "Best sol2: " << best_sol << endl;
 
         while (true) {
             int64_t i2 = rand_int(gen);
@@ -256,23 +252,16 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
         int64_t si1 = solution[i1];
         int64_t si2 = solution[i2];
 
-        int64_t new_sol = curr_sol - si1 - si1;
-        // cout <<  "New sol1: " << new_sol << endl;
         int64_t neg = bin_int(gen) < 0.5;
 
+        solution[i1] = -si1;
         if (neg) {
-            new_sol -= si2 + si2;
+            solution[i2] = -si2;
         }
 
-        // cout <<  "New sol2: " << new_sol << endl;
-
-        new_sol = large_abs(new_sol);
+        int64_t new_sol = large_abs(residue(solution, nums));
 
         if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, i)) {
-            solution[i1] = -si1;
-            if (neg) {
-                solution[i2] = -si2;
-            }
             curr_sol = new_sol;
         }
 
@@ -326,8 +315,8 @@ int64_t prepartHillClimbing(const vector<int64_t>& nums) {
             }
         }
 
-        int64_t temp = P[idx];
-        P[idx] = j;
+        int64_t temp = P[i];
+        P[i] = j;
 
         numsPrime = partition(nums, P);
         int64_t new_sol = karmarkarKarp(numsPrime);
