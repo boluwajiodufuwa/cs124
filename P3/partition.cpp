@@ -246,9 +246,9 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
         new_sol = abs(new_sol);
 
         if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, i)) {
-            S[i1] = -si1;
+            solution[i1] = -si1;
             if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
-                S[i2] = -si2;
+                solution[i2] = -si2;
             }
             curr_sol = new_sol;
         }
