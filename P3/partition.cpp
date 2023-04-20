@@ -280,9 +280,9 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
         new_sol = abs(new_sol);
 
         if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, i)) {
-            S[i1] = -si1;
+            solution[i1] = -si1;
             if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
-                S[i2] = -si2;
+                solution[i2] = -si2;
             }
             curr_sol = new_sol;
         }
@@ -318,9 +318,30 @@ int main(int argc, char *argv[]) {
     int algorithm = atoi(argv[2]);
     char* inputfile = argv[3];
 
+    int64_t residue = 0;
+    vector<int64_t> sequence = asciiToSequence(inputfile);
+
     if (do_tests == 1) {
         run_tests();
     }
+
+    if (algorithm == "0") {
+        residue = residue(karmar);
+    } else if (algorithm == "1") {
+
+    } else if (algorithm == "2") {
+
+    } else if (algorithm == "3") {
+
+    } else if (algorithm == "11") {
+
+    } else if (algorithm == "12") {
+
+    } else if (algorithm ==  "13") {
+
+    }
+
+    cout << residue;
 
     return 0;
 }
