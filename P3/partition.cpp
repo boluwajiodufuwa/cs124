@@ -155,23 +155,6 @@ int karmarkarKarp(vector<int64_t>& nums) {
 // Takes list of nonnegative integers and randomly generates/replaces solutions until we've reached last iteration
 int repeatedRandom(vector<int64_t>& nums, int max_iter = 25000) {
     // Create a random solution 
-    int n = nums.size();
-    vector<int64_t> solution = random_bits(n);
-
-    // Test max_iteration (TODO; WHAT IS MAX_ITER)
-    int max_iter = 1000;
-
-    for (int i = 0; i < max_iter; i++) {
-        // Initialize a different random solution and substitute it if its residue is lower
-        vector<int64_t> curr_rand = random_bits(n);
-        if (residue(curr_rand, nums) < residue(solution, nums)) {
-            solution = curr_rand;
-        }
-
-    }   
-
-    return solution;
-
     int solution = accumulate(nums.begin(), nums.end(), 0);
     srand(std::time(0));
 
@@ -181,10 +164,10 @@ int repeatedRandom(vector<int64_t>& nums, int max_iter = 25000) {
             residueSp += elt * (rand() % 2 == 0 ? 1 : -1);
         }
         residueSp = abs(residueSp);
-        best = min(best, residueSp);
+        solution = min(solution, residueSp);
     }
 
-    return best;
+    return solution;
 }
 
 
@@ -296,15 +279,15 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
 // ----------------------------------------------------------------
 // Prepartitioned Functions
 // ----------------------------------------------------------------
-int prepartRepeatRand(const std::vector<int64_t>& A, int max_iter = 25000) {
+int prepartRepeatRand(const std::vector<int64_t>& nums, int max_iter = 25000) {
     double best = std::numeric_limits<double>::infinity();
 
-    std::srand(std::time(0));
+    srand(std::time(0));
 
     for (int i = 0; i < max_iter; ++i) {
-        vector<int64_t> new_A = partition(A);
+        vector<int64_t> new_A = partition(nums);
         int sol = karmarkarKarp(new_A);
-        best = std::min(best, static_cast<double>(sol));
+        best = min(best, static_cast<double>(sol));
     }
 
     return static_cast<int>(best);
