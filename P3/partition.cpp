@@ -12,6 +12,7 @@
 #include <ctime>
 #include <cmath>
 #include <cstdlib>
+#include "tests.h"
 
 using namespace std;
 
@@ -21,6 +22,8 @@ using namespace std;
 // ----------------------------------------------------------------
 // Miscellaneous functions
 // ----------------------------------------------------------------
+
+int MAX_ITER = 1000;
 
 // Power function for large numbers
 int64_t power(int64_t base, int64_t exponent) {
@@ -85,15 +88,15 @@ vector<int64_t> asciiToSequence(char* fn) {
 }
 
 // Generates random list of bits of length n to be used as potential solution for partition
-std::vector<int64_t> random_bits(int64_t n) {
-    std::vector<int64_t> bits(n);
-    std::random_device rd;
+vector<int64_t> random_bits(int64_t n) {
+    vector<int64_t> bits(n);
+    random_device rd;
 
     // Seed the random number generator with the random device
-    std::mt19937 rng(rd()); 
+    mt19937 rng(rd()); 
 
     // Define a uniform distribution for generating random bits
-    std::uniform_int_distribution<int> dist(0, 1); 
+    uniform_int_distribution<int> dist(0, 1); 
 
     for (int i = 0; i < n; ++i) {
         bits[i] = dist(rng) == 0 ? -1 : 1;
@@ -145,10 +148,7 @@ vector<int64_t> repeatedRandom(vector<int64_t> nums) {
     int n = nums.size();
     vector<int64_t> solution = random_bits(n);
 
-    // Test max_iteration (TODO; WHAT IS MAX_ITER)
-    int max_iter = 1000;
-
-    for (int i = 0; i < max_iter; i++) {
+    for (int i = 0; i < MAX_ITER; i++) {
         // Initialize a different random solution and substitute it if its residue is lower
         vector<int64_t> curr_rand = random_bits(n);
         if (residue(curr_rand, nums) < residue(solution, nums)) {
@@ -164,14 +164,14 @@ vector<int64_t> repeatedRandom(vector<int64_t> nums) {
 // Hill Climbing
 // According to ed, max_iter should be 25k
 // Takes list of nonnegative integers and randomly generates a solution and finds the most optimal neighboring solution until we've reached last iteration
-int hillClimbing(const vector<int64_t>& nums, int max_iter = 25000) {
+int hillClimbing(const vector<int64_t>& nums) {
     // Randomized solution creation
     int n = nums.size();
     vector<int64_t> solution = random_bits(n);
     int best_sol = abs(accumulate(solution.begin(), solution.end(), 0));
 
-    for (int iter = 0; iter < max_iter; iter++) {
-        int i1 = std::rand() % n;
+    for (int iter = 0; iter < MAX_ITER; iter++) {
+        int i1 = rand() % n;
         int i2 = i1;
         while (i2 == i1) {
             i2 = rand() % n;
@@ -265,6 +265,10 @@ int main(int argc, char *argv[]) {
     int do_tests = atoi(argv[1]);
     int algorithm = atoi(argv[2]);
     char* inputfile = argv[3];
+
+    if (do_tests == 1) {
+        run_tests();
+    }
 
     return 0;
 }
