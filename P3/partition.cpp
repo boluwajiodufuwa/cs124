@@ -87,6 +87,28 @@ vector<int64_t> asciiToSequence(char* fn) {
 
 }
 
+// Function used for prepartitioned functions
+vector<int64_t> partition(const vector<int64_t>& A, vector<int64_t> P = {}) {
+    size_t sz = A.size();
+
+    if (P.empty()) {
+        srand(std::time(0));
+        P.resize(sz);
+        for (size_t i = 0; i < sz; i++) {
+            P[i] = std::rand() % sz;
+        }
+    }
+
+    std::vector<int64_t> A_prime(sz, 0);
+
+    for (size_t j = 0; j < sz; j++) {
+        A_prime[P[j]] += A[j];
+    }
+
+    return A_prime;
+}
+
+
 // Generates random list of bits of length n to be used as potential solution for partition
 vector<int64_t> random_bits(int64_t n) {
     vector<int64_t> bits(n);
@@ -111,39 +133,30 @@ vector<int64_t> random_bits(int64_t n) {
 
 // Karmar-Karp algorithm
 // Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
-vector<int64_t> karmarkarKarp(vector<int64_t> nums) {
-    priority_queue<pair<int, int>, vector<pair<int, int>>, less<pair<int, int>>> max_heap;
-    vector<int64_t> sign_mapping;
-
-    // Initialize priority queue for inputted list of numbers (a)
+int karmarkarKarp(vector<int64_t>& nums) {
+    // Initialize priority queue for inputted list of numbers (a)   
+    priority_queue<int64_t> max_heap;
+    
     for (int i = 0; i < nums.size(); i++) {
-        max_heap.push({nums[i], i});
-        sign_mapping[i] = 1;
+        max_heap.push(nums[i]);
     }
 
-    // Perform Karmar-Karp algorithm on priority queue
-    while (max_heap.size() > 1) {
-        auto largest = max_heap.top();
-        max_heap.pop();
-        auto second_largest = max_heap.top();
-        max_heap.pop();
-
-        int diff = largest.first - second_largest.first;
-        int largest_idx = largest.second;
-        int second_largest_idx = second_largest.second;
-
-        // Set the signs for the corresponding partitions
-        sign_mapping[largest_idx] = -sign_mapping[second_largest_idx];
-        max_heap.push({diff, largest_idx});
+    int64_t max1 = 0;
+    int64_t max2 = 0;
+ 
+    while (max2 != 0) {
+        max1 = max_heap.pop();
+        max2 = max_heap.pop();
+        max_heap.push(abs(max1 - max2));
+        max_heap.push(0);
     }
 
-    // Return list of signs (1 or -1) for corresponding partitions
-    return sign_mapping;
+    return max1;
 }
 
 // Repeated Random
 // Takes list of nonnegative integers and randomly generates/replaces solutions until we've reached last iteration
-vector<int64_t> repeatedRandom(vector<int64_t> nums) {
+int repeatedRandom(vector<int64_t>& nums, int max_iter = 25000) {
     // Create a random solution 
     int n = nums.size();
     vector<int64_t> solution = random_bits(n);
@@ -158,8 +171,39 @@ vector<int64_t> repeatedRandom(vector<int64_t> nums) {
     }   
 
     return solution;
+
+    int solution = accumulate(nums.begin(), nums.end(), 0);
+    srand(std::time(0));
+
+    for (int i = 0; i < max_iter; i++) {
+        int residueSp = 0;
+        for (int elt : nums) {
+            residueSp += elt * (rand() % 2 == 0 ? 1 : -1);
+        }
+        residueSp = abs(residueSp);
+        best = min(best, residueSp);
+    }
+
+    return best;
 }
 
+
+
+int repeat_rand(const std::vector<int>& A, int max_iter = 25000) {
+    int best = std::accumulate(A.begin(), A.end(), 0);
+    std::srand(std::time(0));
+
+    for (int i = 0; i < max_iter; i++) {
+        int residueSp = 0;
+        for (int elt : A) {
+            residueSp += elt * (std::rand() % 2 == 0 ? 1 : -1);
+        }
+        residueSp = abs(residueSp);
+        best = std::min(best, residueSp);
+    }
+
+    return best;
+}
 
 // Hill Climbing
 // According to ed, max_iter should be 25k
@@ -199,6 +243,7 @@ int hillClimbing(const vector<int64_t>& nums) {
     return best_sol;
 }
 
+
 bool anneal_prob(int res_Sp, int res_S, int iter) {
     double T_iter = std::pow(10, 10) * std::pow(0.8, std::floor((iter + 1) / 300.0));
     double exponent = -(static_cast<double>(res_Sp) - res_S) / T_iter;
@@ -206,6 +251,7 @@ bool anneal_prob(int res_Sp, int res_S, int iter) {
     srand(std::time(0));
     return (static_cast<double>(std::rand()) / RAND_MAX) < std::exp(exponent);
 }
+
 
 int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
     // Randomized solution creation
@@ -247,16 +293,22 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
     return best_sol;
 }
 
-// Simulated Annealing
-//
-vector<int64_t> simulatedAnnealing(vector<int64_t> nums) {
-
-}
-
 // ----------------------------------------------------------------
 // Prepartitioned Functions
 // ----------------------------------------------------------------
+int prepartRepeatRand(const std::vector<int64_t>& A, int max_iter = 25000) {
+    double best = std::numeric_limits<double>::infinity();
 
+    std::srand(std::time(0));
+
+    for (int i = 0; i < max_iter; ++i) {
+        vector<int64_t> new_A = partition(A);
+        int sol = karmarkarKarp(new_A);
+        best = std::min(best, static_cast<double>(sol));
+    }
+
+    return static_cast<int>(best);
+}
 
 // ----------------------------------------------------------------
 // Main
