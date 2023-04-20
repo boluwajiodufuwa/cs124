@@ -8,6 +8,10 @@
 #include <queue>
 #include <map>
 #include <cstdint>
+#include <algorithm>
+#include <ctime>
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 
@@ -98,13 +102,6 @@ std::vector<int64_t> random_bits(int64_t n) {
     return bits;
 }
 
-// Generates the neighbor of a given input vector (defined by prog set as a list with 1 or 2 values being different)
-std::vector<int64_t> find_neighbor(vector<int64_t> nums) {
-    vector<int64_t> neighbor;
-    
-    return neighbor;
-}
-
 // ----------------------------------------------------------------
 // Heuristic Functions
 // ----------------------------------------------------------------
@@ -163,26 +160,91 @@ vector<int64_t> repeatedRandom(vector<int64_t> nums) {
     return solution;
 }
 
+
 // Hill Climbing
+// According to ed, max_iter should be 25k
 // Takes list of nonnegative integers and randomly generates a solution and finds the most optimal neighboring solution until we've reached last iteration
-vector<int64_t> hillClimbing(vector<int64_t> nums) {
-    // Create a random solution 
+int hillClimbing(const vector<int64_t>& nums, int max_iter = 25000) {
+    // Randomized solution creation
+    int n = nums.size();
+    vector<int64_t> solution = random_bits(n);
+    int best_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+
+    for (int iter = 0; iter < max_iter; iter++) {
+        int i1 = std::rand() % n;
+        int i2 = i1;
+        while (i2 == i1) {
+            i2 = rand() % n;
+        }
+
+        int si1 = solution[i1];
+        int si2 = solution[i2];
+
+        int new_sol = best_sol - si1 - si1;
+
+        if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
+            new_sol -= si2 + si2;
+        }
+
+        new_sol = abs(new_sol);
+
+        if (new_sol < best_sol) {
+            solution[i1] = -si1;
+            if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
+                solution[i2] = -si2;
+            }
+        }
+    }
+
+    return best_sol;
+}
+
+bool anneal_prob(int res_Sp, int res_S, int iter) {
+    double T_iter = std::pow(10, 10) * std::pow(0.8, std::floor((iter + 1) / 300.0));
+    double exponent = -(static_cast<double>(res_Sp) - res_S) / T_iter;
+
+    srand(std::time(0));
+    return (static_cast<double>(std::rand()) / RAND_MAX) < std::exp(exponent);
+}
+
+int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
+    // Randomized solution creation
     int n = nums.size();
     vector<int64_t> solution = random_bits(n);
 
-    // Test max_iteration (TODO; WHAT IS MAX_ITER)
-    int max_iter = 1000;
+    int curr_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+    int best_sol = curr_sol;
 
     for (int i = 0; i < max_iter; i++) {
-        // Find a neighbor of the current solution
-        vector<int64_t> neighbor = find_neighbor(solution);
-        if (residue(neighbor, nums) < residue(solution, nums)) {
-            solution = neighbor;
+        int i1 = rand() % n;
+        int i2 = i1;
+        while (i2 == i1) {
+            i2 = rand() % n;
         }
 
-    }   
+        int si1 = solution[i1];
+        int si2 = solution[i2];
 
-    return solution;
+        int new_sol = curr_sol - si1 - si1;
+
+        if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
+            new_sol -= si2 + si2;
+        }
+
+        new_sol = abs(new_sol);
+
+        if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, i)) {
+            S[i1] = -si1;
+            if (static_cast<float>(rand()) / RAND_MAX < 0.5) {
+                S[i2] = -si2;
+            }
+            curr_sol = new_sol;
+        }
+
+        best_sol = min(best_sol, new_sol);
+    }
+
+    return best_sol;
 }
 
 // Simulated Annealing
@@ -190,6 +252,11 @@ vector<int64_t> hillClimbing(vector<int64_t> nums) {
 vector<int64_t> simulatedAnnealing(vector<int64_t> nums) {
 
 }
+
+// ----------------------------------------------------------------
+// Prepartitioned Functions
+// ----------------------------------------------------------------
+
 
 // ----------------------------------------------------------------
 // Main
