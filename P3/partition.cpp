@@ -129,23 +129,23 @@ std::vector<int64_t> random_bits(int64_t n) {
 // ----------------------------------------------------------------
 
 // Karmar-Karp algorithm
-// Takes in input of a list of nonnegative integers and outputs a list of signs to represent the partition that results in the minimum guaranteed partition
 int karmarkarKarp(vector<int64_t>& nums) {
     // Initialize priority queue for inputted list of numbers (a)   
-    priority_queue<int64_t> max_heap;
-    
-    for (int i = 0; i < nums.size(); i++) {
-        max_heap.push(nums[i]);
-    }
+    std::priority_queue<int64_t> maxHeap(nums.begin(), nums.end());
 
-    int64_t max1 = 0;
-    int64_t max2 = 0;
- 
-    while (max2 != 0) {
-        max1 = max_heap.pop();
-        max2 = max_heap.pop();
-        max_heap.push(abs(max1 - max2));
-        max_heap.push(0);
+    int64_t max1 = 0, max2 = 0;
+
+    while (max2 != 0) { // Keep running until max2 is 0
+        // Pop the two maximum values from the heap
+        max1 = maxHeap.top();
+        maxHeap.pop();
+        max2 = maxHeap.top();
+        maxHeap.pop();
+
+        // Push the absolute difference of max1 and max2 back into the heap
+        maxHeap.push(abs(max1 - max2));
+        // Push 0 back into the heap
+        maxHeap.push(0);
     }
 
     return max1;
@@ -170,23 +170,6 @@ int repeatedRandom(vector<int64_t>& nums, int max_iter = 25000) {
     return solution;
 }
 
-
-
-int repeat_rand(const std::vector<int>& A, int max_iter = 25000) {
-    int best = std::accumulate(A.begin(), A.end(), 0);
-    std::srand(std::time(0));
-
-    for (int i = 0; i < max_iter; i++) {
-        int residueSp = 0;
-        for (int elt : A) {
-            residueSp += elt * (std::rand() % 2 == 0 ? 1 : -1);
-        }
-        residueSp = abs(residueSp);
-        best = std::min(best, residueSp);
-    }
-
-    return best;
-}
 
 // Hill Climbing
 // According to ed, max_iter should be 25k
