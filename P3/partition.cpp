@@ -183,7 +183,7 @@ int64_t hillClimbing(const vector<int64_t>& nums) {
     // Randomized solution creation
     int64_t n = nums.size();
     vector<int64_t> solution = random_bits(n);
-    int64_t best_sol = large_abs(accumulate(solution.begin(), solution.end(), 0));
+    int64_t best_sol = large_abs(residue(solution, nums));
 
     uniform_int_distribution<int64_t> rand_int(1, n-1);
 
@@ -201,21 +201,19 @@ int64_t hillClimbing(const vector<int64_t>& nums) {
         int64_t si1 = solution[i1];
         int64_t si2 = solution[i2];
 
-        int64_t new_sol = best_sol - si1 - si1;
         int64_t neg = bin_int(gen) < 0.5;
 
+        solution[i1] = -si1;
         if (neg) {
-            new_sol -= si2 + si2;
+            solution[i2] = -si2;
         }
 
-        new_sol = large_abs(new_sol);
+        int64_t new_sol = large_abs(residue(solution, nums));
 
         if (new_sol < best_sol) {
-            solution[i1] = -si1;
-            if (neg) {
-                solution[i2] = -si2;
-            }
+            best_sol = large_abs(residue(solution, nums));
         }
+
     }
 
     return best_sol;
@@ -246,6 +244,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
     for (int64_t i = 0; i < MAX_ITER; i++) {
         int64_t i1 = rand_int(gen);
         int64_t i2 = rand_int(gen);
+        cout <<  "Best sol2: " << best_sol << endl;
 
         while (true) {
             int64_t i2 = rand_int(gen);
@@ -258,11 +257,14 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
         int64_t si2 = solution[i2];
 
         int64_t new_sol = curr_sol - si1 - si1;
+        // cout <<  "New sol1: " << new_sol << endl;
         int64_t neg = bin_int(gen) < 0.5;
 
         if (neg) {
             new_sol -= si2 + si2;
         }
+
+        // cout <<  "New sol2: " << new_sol << endl;
 
         new_sol = large_abs(new_sol);
 
@@ -274,7 +276,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
             curr_sol = new_sol;
         }
 
-        // cout <<  "Best sol: " << best_sol << endl;
+        // cout <<  "Best sol2: " << best_sol << endl;
         best_sol = min(best_sol, new_sol);
     }
 
