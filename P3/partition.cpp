@@ -122,7 +122,7 @@ vector<int64_t> random_bits(int64_t n) {
     vector<int64_t> bits(n);
 
     for (int64_t i = 0; i < n; ++i) {
-        bits[i] = bin_int(rand_dev) == 0 ? -1 : 1;
+        bits[i] = bin_int(gen) % 2 == 0 ? 1 : -1;
     }
 
     return bits;
@@ -238,6 +238,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
 
     int64_t curr_sol = large_abs(accumulate(solution.begin(), solution.end(), 0LL));
     int64_t best_sol = curr_sol;
+    cout <<  "Best sol1: " << best_sol << endl;
     
     for (int64_t i = 0; i < MAX_ITER; i++) {
         int64_t i1 = rand_int(gen);
@@ -270,6 +271,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
             curr_sol = new_sol;
         }
 
+        // cout <<  "Best sol: " << best_sol << endl;
         best_sol = min(best_sol, new_sol);
     }
 
