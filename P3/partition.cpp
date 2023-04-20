@@ -279,6 +279,8 @@ int simulatedAnnealing(const std::vector<int64_t>& nums, int max_iter = 25000) {
 // ----------------------------------------------------------------
 // Prepartitioned Functions
 // ----------------------------------------------------------------
+
+// Prepartioned Repeat Random
 int prepartRepeatRand(const std::vector<int64_t>& nums, int max_iter = 25000) {
     double best = std::numeric_limits<double>::infinity();
 
@@ -291,6 +293,85 @@ int prepartRepeatRand(const std::vector<int64_t>& nums, int max_iter = 25000) {
     }
 
     return static_cast<int>(best);
+}
+
+// Prepartioned Hill Climbing
+int prepartHillClimbing(const vector<int64_t>& nums, int max_iter = 25000) {
+    int sz = nums.size();
+    srand(std::time(0));
+    
+    std::vector<int64_t> P(sz);
+
+    for (int i = 0; i < sz; ++i) {
+        P[i] = std::rand() % sz;
+    }
+
+    std::vector<int64_t> numsPrime = partition(nums, P);
+    int best_sol = karmarkarKarp(numsPrime);
+
+    for (int idx = 0; idx < max_iter; ++idx) {
+        int i, j;
+
+        while (P[idx] == j) {
+            i = std::rand() % sz;
+            j = std::rand() % sz;
+        }
+
+        int temp = P[idx];
+        P[idx] = j;
+
+        numsPrime = partition(nums, P);
+        int new_sol = karmarkarKarp(numsPrime);
+
+        if (best_sol > new_sol) {
+            best_sol = new_sol;
+        } else {
+            P[i] = temp;
+        }
+    }
+
+    return best_sol;
+}
+
+// Prepartioned Simulated Annealing
+int prepartSimAnneal(const std::vector<int64_t>& nums, int max_iter = 25000) {
+    int sz = nums.size();
+
+    std::srand(std::time(0));
+
+    std::vector<int64_t> P(sz);
+    for (int i = 0; i < sz; ++i) {
+        P[i] = std::rand() % sz;
+    }
+
+    std::vector<int64_t> numsPrime = partition(nums, P);
+
+    int curr_sol = karmarkarKarp(numsPrime);
+    int best_sol = curr_sol;
+
+    for (int it = 0; it < max_iter; ++it) {
+        int i, j;
+        while (P[i] == j) {
+            i = rand() % sz;
+            j = rand() % sz;
+        }
+
+        int temp = P[i];
+        P[i] = j;
+
+        numsPrime = partition(nums, P);
+        int new_sol = karmarkarKarp(numsPrime);
+
+        if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, it)) {
+            curr_sol = new_sol;
+        } else {
+            P[i] = temp;
+        }
+
+        best_sol = min(best_sol, curr_sol);
+    }
+
+    return best_sol;
 }
 
 // ----------------------------------------------------------------
