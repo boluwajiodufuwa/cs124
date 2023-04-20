@@ -34,6 +34,13 @@ int64_t power(int64_t base, int64_t exponent) {
     return result;
 }
 
+int64_t large_abs(int64_t num) {
+    if (num < 0) {
+        return num * -1;
+    }
+    return num;
+}
+
 // Takes in a solution in the standard form (1s and -1s) and a sequence and returns residue
 int64_t residue(vector<int64_t> solution, vector<int64_t> seq) {
     int64_t residue = 0;
@@ -136,8 +143,8 @@ int64_t karmarkarKarp(vector<int64_t>& nums) {
     // Initialize priority queue for inputted list of numbers (a)   
     priority_queue<int64_t> maxHeap(nums.begin(), nums.end());
 
-    int64_t max1;
-    int64_t max2;
+    int64_t max1 = 1;
+    int64_t max2 = 1;
 
     while (max2 != 0) { // Keep running until max2 is 0
         // Pop the two maximum values from the heap
@@ -147,11 +154,9 @@ int64_t karmarkarKarp(vector<int64_t>& nums) {
         maxHeap.pop();
 
         // Push the absolute difference of max1 and max2 back into the heap
-        maxHeap.push(abs(max1 - max2));
+        maxHeap.push(max1 - max2);
         // Push 0 back into the heap
         maxHeap.push(0);
-
-        cout << "Max: " << max1 << endl;
     }
 
 
@@ -162,7 +167,7 @@ int64_t karmarkarKarp(vector<int64_t>& nums) {
 // Takes list of nonnegative integers and randomly generates/replaces solutions until we've reached last iteration
 int64_t repeatedRandom(vector<int64_t>& nums) {
     // Create a random solution 
-    int64_t solution = accumulate(nums.begin(), nums.end(), 0);
+    int64_t solution = accumulate(nums.begin(), nums.end(), 0LL);
     srand(time(0));
 
     for (int64_t i = 0; i < MAX_ITER; i++) {
@@ -170,8 +175,8 @@ int64_t repeatedRandom(vector<int64_t>& nums) {
         for (int64_t elt : nums) {
             residueSp += elt * (rand() % 2 == 0 ? 1 : -1);
         }
-        residueSp = abs(residueSp);
-        solution = min(solution, residueSp);
+        residueSp = large_abs(residueSp);
+        solution = min(solution, residueSp) < 0 ? residueSp : min(solution, residueSp);
     }
 
     return solution;
@@ -185,7 +190,7 @@ int64_t hillClimbing(const vector<int64_t>& nums) {
     // Randomized solution creation
     int64_t n = nums.size();
     vector<int64_t> solution = random_bits(n);
-    int64_t best_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+    int64_t best_sol = large_abs(accumulate(solution.begin(), solution.end(), 0LL));
 
     for (int64_t iter = 0; iter < MAX_ITER; iter++) {
         int64_t i1 = rand() % n;
@@ -203,7 +208,7 @@ int64_t hillClimbing(const vector<int64_t>& nums) {
             new_sol -= si2 + si2;
         }
 
-        new_sol = abs(new_sol);
+        new_sol = large_abs(new_sol);
 
         if (new_sol < best_sol) {
             solution[i1] = -si1;
@@ -231,7 +236,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
     int64_t n = nums.size();
     vector<int64_t> solution = random_bits(n);
 
-    int64_t curr_sol = abs(accumulate(solution.begin(), solution.end(), 0));
+    int64_t curr_sol = large_abs(accumulate(solution.begin(), solution.end(), 0LL));
     int64_t best_sol = curr_sol;
 
     for (int64_t i = 0; i < MAX_ITER; i++) {
@@ -250,7 +255,7 @@ int64_t simulatedAnnealing(const vector<int64_t>& nums) {
             new_sol -= si2 + si2;
         }
 
-        new_sol = abs(new_sol);
+        new_sol = large_abs(new_sol);
 
         if (new_sol < curr_sol || anneal_prob(new_sol, curr_sol, i)) {
             solution[i1] = -si1;
